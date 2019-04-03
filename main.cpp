@@ -63,5 +63,18 @@ int main(){
 	Reader reader;
 	reader.Parse(is, handler);
 */
+	
+	//parse file normally and put into an array, test handler on it
+	
+	char json[4096];
+	int i=0;
+	while(!inFile.eof()&&i<4096){
+		//(std::cout)<<put(json);
+		inFile >> json[i];
+		i++;
+	
+	}
+
+	
 	return 0;
 }
