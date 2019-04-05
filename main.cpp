@@ -66,15 +66,16 @@ int main(){
 	
 	//parse file normally and put into an array, test handler on it
 	
-	char json[4096];
+	char _json[4096];
 	int i=0;
 	while(!inFile.eof()&&i<4096){
-		//(std::cout)<<put(json);
-		inFile >> json[i];
+		_json[i] = inFile.get();	
+		//std::cout<<_json[i]<<std::endl;
 		i++;
-	
 	}
 
+	StringStream s2(_json);
+	reader.Parse(s2, handler);
 	
 	return 0;
 }
