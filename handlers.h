@@ -2,6 +2,7 @@
 #include "include/rapidjson/document.h" //DOM API 
 #include "include/rapidjson/prettywriter.h" //stringify JSON
 #include "include/rapidjson/filereadstream.h"
+#include "digital_structs.h"
 #include <iostream>
 
 using namespace rapidjson;
@@ -9,7 +10,7 @@ using namespace std;
 
 
 struct MyHandler : public BaseReaderHandler<UTF8<>, MyHandler> {
-    bool Null();// { cout << "Null()" << endl; return true; }
+    bool Null() { cout << "Null()" << endl; return true; }
     bool Bool(bool b) { cout << "Bool(" << boolalpha << b << ")" << endl; return true; }
     bool Int(int i) { cout << "Int(" << i << ")" << endl; return true; }
     bool Uint(unsigned u) { cout << "Uint(" << u << ")" << endl; return true; }
@@ -23,7 +24,8 @@ struct MyHandler : public BaseReaderHandler<UTF8<>, MyHandler> {
     bool StartObject() { cout << "StartObject()" << endl; return true; }
     bool Key(const char* str, SizeType length, bool copy) { 
         cout << "Key(" << str << ", " << length << ", " << boolalpha << copy << ")" << endl;
-        return true;
+        //if the key is "parsers" -> set a flag and start parsing into digital logic classes
+		return true;
     }   
     bool EndObject(SizeType memberCount) { cout << "EndObject(" << memberCount << ")" << endl; return true; }
     bool StartArray() { cout << "StartArray()" << endl; return true; }

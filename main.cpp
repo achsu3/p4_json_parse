@@ -11,8 +11,6 @@ using namespace rapidjson;
 
 int main(){
 	ifstream inFile ("basic.json");
-	//inFile.open("basic.json");
-	
 	if(!inFile){
 		printf("/n couldn't open file /n");
 		return -1;

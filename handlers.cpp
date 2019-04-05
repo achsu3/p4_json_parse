@@ -9,7 +9,10 @@
 using namespace rapidjson;
 using namespace std;
 
+/*
 bool MyHandler::Null(){
 	cout<< "NULL()"<<endl;
 	return true;
 }
+
+*/
