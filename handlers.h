@@ -9,6 +9,10 @@
 using namespace rapidjson;
 using namespace std;
 
+//global variable for whether we are on the "Parsers" portion of the JSON
+//and we should start putting things into structures
+int parser = 0;
+
 
 struct MyHandler : public BaseReaderHandler<UTF8<>, MyHandler> {
     bool Null() {
@@ -51,7 +55,8 @@ struct MyHandler : public BaseReaderHandler<UTF8<>, MyHandler> {
         cout << "Key(" << str << ", " << length << ", " << boolalpha << copy << ")" << endl;
         //if the key is "parsers" -> set a flag and start parsing into digital logic classes
         if(str == "parsers"){
-
+          //turn flag on and parse things into classes
+          parser = 1;
         }
 
 		return true;
