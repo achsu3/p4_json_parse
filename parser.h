@@ -2,8 +2,7 @@
 #include "include/rapidjson/document.h" //DOM API
 #include "include/rapidjson/prettywriter.h" //stringify JSON
 #include "include/rapidjson/filereadstream.h"
-#include "digital_structs.h"
-#include "parser.h"
+
 #include <string>
 #include <iostream>
 #include <map>
@@ -21,7 +20,7 @@ class transition{
 class state{
   public:
     string name;
-    list<transition>;
+    list<transition> transitions;
 };
 
 class parser{
