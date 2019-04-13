@@ -21,9 +21,9 @@ int main(){
 	Reader reader;
 	
 	//parse file normally and put into an array, test handler on it
-	char _json[4096];
+	char _json[8000];
 	int i=0;
-	while(!inFile.eof()&&i<4096){
+	while(!inFile.eof()&&i<8000){
 		_json[i] = inFile.get();
 		//std::cout<<_json[i]<<std::endl;
 		i++;

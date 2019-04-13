@@ -5,14 +5,27 @@
 #include "digital_structs.h"
 #include "parser.h"
 #include <iostream>
+#include <list>
+#include <string>
 
 using namespace rapidjson;
 using namespace std;
+
+//global variable for resulting parser structure(s) 
+parser _parser;
 
 //global variable for whether we are on the "Parsers" portion of the JSON
 //and we should start putting things into structures
 int parser = 0;
 
+//variables to track whether we are done with the parser
+int arrcount = 0;
+
+class current_key{
+	string key; //the name of the key
+	int count;	//the count of startArray/objs so we know when this key is over
+	current_key * next_key;	//the next key - questionable!
+};
 
 struct MyHandler : public BaseReaderHandler<UTF8<>, MyHandler> {
     bool Null() {
@@ -58,6 +71,9 @@ struct MyHandler : public BaseReaderHandler<UTF8<>, MyHandler> {
           //turn flag on and parse things into classes
           parser = 1;
         }
+		else if(str == "name"){
+		
+		}
 
 		return true;
     }
@@ -67,10 +83,21 @@ struct MyHandler : public BaseReaderHandler<UTF8<>, MyHandler> {
     }
     bool StartArray() {
       cout << "StartArray()" << endl;
-      return true;
+      if(parser == 1){
+	  	arrcount++;
+	  }
+	  
+	  return true;
     }
     bool EndArray(SizeType elementCount) {
       cout << "EndArray(" << elementCount << ")" << endl;
-      return true;
+      if(parser == 1){
+	  	arrcount--;
+		if(arrcount == 0){
+			parser = 0;
+		}
+	  }
+
+	  return true;
     }
 };

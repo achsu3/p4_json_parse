@@ -27,5 +27,6 @@ class parser{
   public:
     string name;
     list<state> states;
-    map<string,state> state_map;
+    
+	map<string,state> state_map;
 };
