@@ -13,15 +13,15 @@ class mux{
 	public:
 		vector<string> inputs;
 
-}
+};
 
 class nand{
 	public:
 		vector<string> inputs;
 
-}
+};
 
 class _not{
 	public:
 		vector<string> inputs;
-}
+};
