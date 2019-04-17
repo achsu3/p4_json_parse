@@ -11,92 +11,123 @@
 using namespace rapidjson;
 using namespace std;
 
-//global variable for resulting parser structure(s) 
-parser _parser;
+// list of the parsers
+list<parser> parsers;
 
 //global variable for whether we are on the "Parsers" portion of the JSON
 //and we should start putting things into structures
-int parser = 0;
+int parsers = 0;
 
-//variables to track whether we are done with the parser
-int arrcount = 0;
+// there will be more flags here that turn on as we pass imporant "keys"
+// that mark places where we need to store data
+int name = 0;
 
-class current_key{
-	string key; //the name of the key
-	int count;	//the count of startArray/objs so we know when this key is over
-	current_key * next_key;	//the next key - questionable!
-};
+int parse_states = 0;
+
+int state = 0; //turn off after each transition_key to indicate next state
+
+int transition_key = 0;
+
+int value = 0;
+
+int startArray = 0;
+
+int endArray = 0;
+
+int next_state;
 
 struct MyHandler : public BaseReaderHandler<UTF8<>, MyHandler> {
     bool Null() {
-      cout << "Null()" << endl;
+      //cout << "Null()" << endl;
       return true;
     }
     bool Bool(bool b) {
-      cout << "Bool(" << boolalpha << b << ")" << endl;
+      //cout << "Bool(" << boolalpha << b << ")" << endl;
       return true;
     }
     bool Int(int i) {
-      cout << "Int(" << i << ")" << endl;
+      //cout << "Int(" << i << ")" << endl;
       return true;
     }
     bool Uint(unsigned u) {
-      cout << "Uint(" << u << ")" << endl;
+      //cout << "Uint(" << u << ")" << endl;
       return true;
     }
     bool Int64(int64_t i) {
-      cout << "Int64(" << i << ")" << endl;
+      //cout << "Int64(" << i << ")" << endl;
       return true;
     }
     bool Uint64(uint64_t u) {
-      cout << "Uint64(" << u << ")" << endl;
+      //cout << "Uint64(" << u << ")" << endl;
       return true;
     }
     bool Double(double d) {
-      cout << "Double(" << d << ")" << endl;
+      //cout << "Double(" << d << ")" << endl;
       return true;
     }
     bool String(const char* str, SizeType length, bool copy) {
-        cout << "String(" << str << ", " << length << ", " << boolalpha << copy << ")" << endl;
-        return true;
+        //cout << "String(" << str << ", " << length << ", " << boolalpha << copy << ")" << endl;
+				if(parsers == 1 && name == 0 && parse_states == 0 && state == 0 && transition_key == 0 &&
+					value == 0 && next_state == 0){
+							parser *  curr_parser = new parser();
+							parsers.push_back(curr_parser)
+				}
+
+				return true;
     }
     bool StartObject() {
-      cout << "StartObject()" << endl;
+      //cout << "StartObject()" << endl;
       return true;
     }
     bool Key(const char* str, SizeType length, bool copy) {
-        cout << "Key(" << str << ", " << length << ", " << boolalpha << copy << ")" << endl;
+        //cout << "Key(" << str << ", " << length << ", " << boolalpha << copy << ")" << endl;
         //if the key is "parsers" -> set a flag and start parsing into digital logic classes
         if(str == "parsers"){
           //turn flag on and parse things into classes
           parser = 1;
         }
-		else if(str == "name"){
-		
-		}
+				else if(parser == 1){
+					else if(str == "name"){
+						name = 1;
+					}
+					else if(str == "parse_states"){
+						parse_states = 1;
+					}
+					else if(str == "state"){
+						state = 1;
+					}
+					else if(str == "transition_key"){
+						transition_key = 1;
+					}
+					else if(str == "value"){
+						value = 1;
+					}
+					else if(str == "next_state"){
+						next_state = 1;
+					}
+				}
 
-		return true;
+				return true;
     }
     bool EndObject(SizeType memberCount) {
-      cout << "EndObject(" << memberCount << ")" << endl;
+      //cout << "EndObject(" << memberCount << ")" << endl;
       return true;
     }
     bool StartArray() {
-      cout << "StartArray()" << endl;
+      //cout << "StartArray()" << endl;
       if(parser == 1){
-	  	arrcount++;
-	  }
-	  
-	  return true;
+	  		arrcount++;
+	  	}
+	  	return true;
     }
     bool EndArray(SizeType elementCount) {
-      cout << "EndArray(" << elementCount << ")" << endl;
+      //cout << "EndArray(" << elementCount << ")" << endl;
       if(parser == 1){
-	  	arrcount--;
-		if(arrcount == 0){
-			parser = 0;
-		}
-	  }
+	  		arrcount--;
+				if(arrcount == 0){
+					parser = 0;
+				}
+	  	}
 
 	  return true;
     }

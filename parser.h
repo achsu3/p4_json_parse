@@ -13,20 +13,24 @@ using namespace std;
 
 class transition{
   public:
+    // "transitions"->"next_state"
     string to;
-    string from;
+    // the value that triggers this next state
+    string value; //from;
 };
 
 class state{
   public:
-    string name;
+    string name; // parse_states -> name
     list<transition> transitions;
+    // the value type that determines the transition
+    // probably based off of "parser_ops"
+    list<string> value;
 };
 
 class parser{
   public:
-    string name;
+    string name; //first "name" after finding "parsers"
     list<state> states;
-    
-	map<string,state> state_map;
+    map<string,state> state_map;
 };
