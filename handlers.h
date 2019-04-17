@@ -12,7 +12,7 @@ using namespace rapidjson;
 using namespace std;
 
 // list of the parsers
-list<parser*> parsers;
+list<parser*> parsers_list;
 
 // the parser that will be pushed to the list for each iteration
 parser *  curr_parser
@@ -85,8 +85,8 @@ struct MyHandler : public BaseReaderHandler<UTF8<>, MyHandler> {
 				// condition for if a new parser is beginning
 				if(parsers == 1 && name == 0 && parse_states == 0 && state == 0 && transition_key == 0 &&
 					value == 0 && next_state == 0){
-							curr_parser = new parser();
-							parsers.push_back(curr_parser)
+							curr_parser = new parser;
+							parsers_list.push_back(curr_parser)
 				}
 				// condition for grabbing the name of the parser
 				else if (parsers == 1 && name == 1 && parse_states == 0 && state == 0 && transition_key == 0
@@ -97,8 +97,8 @@ struct MyHandler : public BaseReaderHandler<UTF8<>, MyHandler> {
 				else if (parsers == 1 && name == 1 && parse_states == 1 && state == 0 && transition_key == 0
 					&& value == 0 && next_state == 0){
 						// make a new state and put it in the curr_parser's list
-						curr_state = new state();
-						parsers->states.push_back(curr_state);
+						curr_state = new state;
+						curr_parser->states.push_back(curr_state);
 						curr_state->name = str;
 				}
 				// pushing the array that represents the array of fields of the transition key

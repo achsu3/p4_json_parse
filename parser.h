@@ -11,26 +11,26 @@
 using namespace rapidjson;
 using namespace std;
 
-class transition{
+typedef struct _transition{
   public:
     // "transitions"->"next_state"
     string to;
     // the value that triggers this next state
     string value; //from;
-};
+} transition;
 
-class state{
+typedef struct _state{
   public:
     string name; // parse_states -> name
     list<transition* > transitions;
     // the value type that determines the transition
     // probably based off of "parser_ops"
     list<string> value;
-};
+} state;
 
-class parser{
+typedef struct _parser{
   public:
     string name; //first "name" after finding "parsers"
     list<state*> states;
     map<string,state> state_map;
-};
+} parser;
