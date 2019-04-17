@@ -1,5 +1,5 @@
 #include "stdlib.h"
-#include "include/rapidjson/document.h" //DOM API 
+#include "include/rapidjson/document.h" //DOM API
 #include "include/rapidjson/prettywriter.h" //stringify JSON
 #include "include/rapidjson/filereadstream.h"
 #include <iostream>
