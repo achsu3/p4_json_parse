@@ -22,7 +22,7 @@ class transition{
 class state{
   public:
     string name; // parse_states -> name
-    list<*transition> transitions;
+    list<transition* > transitions;
     // the value type that determines the transition
     // probably based off of "parser_ops"
     list<string> value;
@@ -31,6 +31,6 @@ class state{
 class parser{
   public:
     string name; //first "name" after finding "parsers"
-    list<*state> states;
+    list<state*> states;
     map<string,state> state_map;
 };

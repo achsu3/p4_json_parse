@@ -12,7 +12,7 @@ using namespace rapidjson;
 using namespace std;
 
 // list of the parsers
-list<*parser> parsers;
+list<parser*> parsers;
 
 // the parser that will be pushed to the list for each iteration
 parser *  curr_parser
@@ -22,6 +22,11 @@ state * curr_state;
 
 // the transition that will be pushed to the list for this iteration
 transition * curr_transit;
+
+
+//will count the array starts and ends for the overall parser so we know when this
+//entire section is complete 
+int arrcount = 0;
 
 //global variable for whether we are on the "Parsers" portion of the JSON
 //and we should start putting things into structures
@@ -121,9 +126,9 @@ struct MyHandler : public BaseReaderHandler<UTF8<>, MyHandler> {
         //if the key is "parsers" -> set a flag and start parsing into digital logic classes
         if(str == "parsers"){
           //turn flag on and parse things into classes
-          parser = 1;
+          parsers = 1;
         }
-				else if(parser == 1){
+				else if(parsers == 1){
 					else if(str == "name"){
 						name = 1;
 					}
@@ -152,7 +157,7 @@ struct MyHandler : public BaseReaderHandler<UTF8<>, MyHandler> {
     }
     bool StartArray() {
       //cout << "StartArray()" << endl;
-      if(parser == 1){
+      if(parsers == 1){
 	  		arrcount++;
 	  	}
 
@@ -163,10 +168,10 @@ struct MyHandler : public BaseReaderHandler<UTF8<>, MyHandler> {
     }
     bool EndArray(SizeType elementCount) {
       //cout << "EndArray(" << elementCount << ")" << endl;
-      if(parser == 1){
+      if(parsers == 1){
 	  		arrcount--;
 				if(arrcount == 0){
-					parser = 0;
+					parsers = 0;
 
 					//turn the rest of flags off too 
 
