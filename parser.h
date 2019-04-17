@@ -31,6 +31,7 @@ typedef struct _state{
 typedef struct _parser{
   public:
     string name; //first "name" after finding "parsers"
-    list<state*> states;
-    map<string,state> state_map;
+    list<state *> states;
+    map<string,state *> state_map;
 } parser;
+
