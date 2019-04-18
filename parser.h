@@ -11,7 +11,10 @@
 using namespace rapidjson;
 using namespace std;
 
-typedef struct _transition{
+// defined so transition and state can use each other as members
+struct state;
+
+struct transition{
   public:
     //pointer to the state this transition is coming from
     state * from_state;
@@ -23,7 +26,7 @@ typedef struct _transition{
     string str_to_state;
     state * to_state;
     // the value that triggers this next state
-    string * value; //from;
+    string value; //from;
 
     // the value type that determines the transition
     // probably based off of "parser_ops"
@@ -33,9 +36,9 @@ typedef struct _transition{
       value_type.push_back(_val);
     }
 
-} transition;
+};
 
-typedef struct _state{
+struct state{
   public:
     string name; // parse_states -> name
     list<transition* > transitions;
@@ -44,9 +47,9 @@ typedef struct _state{
       transitions.push_back(_transit);
     }
 
-} state;
+};
 
-typedef struct _parser{
+struct parser{
   public:
     string name; //first "name" after finding "parsers"
     list<state *> states;
@@ -59,4 +62,4 @@ typedef struct _parser{
       //map it also
 
     }
-} parser;
+};

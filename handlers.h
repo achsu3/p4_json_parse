@@ -8,8 +8,8 @@
 #include <list>
 #include <string>
 
-using name_flagspace rapidjson;
-using name_flagspace std;
+using namespace rapidjson;
+using namespace std;
 
 // list of the parsers
 list<parser *> parsers;
@@ -59,7 +59,7 @@ void reset_flags(){
 	transition_key_flag = 0;
 	value_flag = 0;
 	arr_flag = 0;
-	transition_flag = 0;
+	transition_key_flag = 0;
 	next_state_flag = 0;
 }
 
@@ -129,7 +129,8 @@ struct MyHandler : public BaseReaderHandler<UTF8<>, MyHandler> {
 		// condition for pushing the transition value to the list
 		else if (in_parser_flag == 1 && name_flag == 1 && parse_states_flag == 1 && state_flag == 0
 			 && transition_key_flag == 0 && value_flag == 1 && next_state_flag== 0){
-				 curr_transit->value = str;
+				string string_val(str);
+				curr_transit->value = string_val;
 
 				 // reset flag
 				 value_flag = 0;
