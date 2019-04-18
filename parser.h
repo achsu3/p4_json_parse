@@ -13,7 +13,14 @@ using namespace std;
 
 typedef struct _transition{
   public:
+    //pointer to the state this transition is coming from
+    state * from_state;
     // "transitions"->"next_state"
+    // hold for the name of the next state
+    // that will determine what will be put in
+    // the pointer, since the next state hasn't
+    // been created yet
+    string str_to_state;
     state * to_state;
     // the value that triggers this next state
     string * value; //from;
@@ -43,6 +50,8 @@ typedef struct _parser{
   public:
     string name; //first "name" after finding "parsers"
     list<state *> states;
+    // maps all the states and the namespace
+    // needed for use in second pass of parse 
     map<string,state *> state_map;
 
     void add_state(state * _state){

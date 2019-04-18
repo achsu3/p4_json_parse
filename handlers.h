@@ -23,7 +23,6 @@ state * curr_state;
 // the transition that will be pushed to the list for this iteration
 transition * curr_transit;
 
-
 //will count the array starts and ends for the overall parser so we know when this
 //entire section is complete
 int arrcount_flag = 0;
@@ -49,6 +48,20 @@ int arr_flag = 0;
 int transitions_flag = 0;
 
 int next_state_flag= 0;
+
+// sets all flags equal to 0
+void reset_flags(){
+	arrcount_flag = 0;
+	in_parser_flag = 0;
+	name_flag = 0;
+	parse_states_flag = 0;
+	state_flag = 0;
+	transition_key_flag = 0;
+	value_flag = 0;
+	arr_flag = 0;
+	transition_flag = 0;
+	next_state_flag = 0;
+}
 
 
 struct MyHandler : public BaseReaderHandler<UTF8<>, MyHandler> {
@@ -89,10 +102,13 @@ struct MyHandler : public BaseReaderHandler<UTF8<>, MyHandler> {
 			curr_parser = new parser;
 			parsers.push_back(curr_parser);
 		}
-		// condition for grabbing the name_flag of the parser
+		// condition for the name of the parser
 		else if (in_parser_flag == 1 && name_flag == 1 && parse_states_flag == 0 && state_flag == 0 && transition_key_flag == 0
 			 && value_flag == 0 && next_state_flag== 0){
-			curr_parser->name_flag = str;
+			curr_parser->name = str;
+
+			// reset flag
+			name_flag = 0;
 		}
 		// condition for grabbing the state name_flag
 		else if (in_parser_flag == 1 && name_flag == 1 && parse_states_flag == 1 && state_flag == 0 && transition_key_flag == 0
@@ -100,22 +116,39 @@ struct MyHandler : public BaseReaderHandler<UTF8<>, MyHandler> {
 			// make a new state and put it in the curr_parser's list
 			curr_state = new state;
 			curr_parser->add_state(curr_state);
-			curr_state->name_flag = str;
+			curr_state->name = str;
+
+			// reset flag
+			name_flag = 0;
 		}
 		// pushing the array that represents the array of fields of the transition key
 		else if (in_parser_flag == 1 && name_flag == 1 && transition_key_flag == 1 && value_flag == 1 && arr_flag == 1){
-			curr_transit->value = str;
+			curr_transit->add_value_type(str);
 			//curr_state->value.push_back(str);
 		}
 		// condition for pushing the transition value to the list
-		else if (in_parser_flag == 1 && name_flag == 1 && parse_states_flag == 0 && state_flag == 0 && transition_key_flag == 0
-			 && value_flag == 0 && next_state_flag== 0){
+		else if (in_parser_flag == 1 && name_flag == 1 && parse_states_flag == 1 && state_flag == 0
+			 && transition_key_flag == 0 && value_flag == 1 && next_state_flag== 0){
+				 curr_transit->value = str;
 
+				 // reset flag
+				 value_flag = 0;
 		}
-		else if (in_parser_flag == 1 && name_flag == 1 && parse_states_flag == 0 && state_flag == 0 && transition_key_flag == 0
-			 && value_flag == 0 && next_state_flag== 0){
-
+		// condition for the next_state field of the transition
+		else if (in_parser_flag == 1 && name_flag == 1 && parse_states_flag == 0 && state_flag == 0
+			 && transition_key_flag == 0 && value_flag == 0 && next_state_flag == 1){
+				 curr_transit->str_to_state = str;
+				 curr_transit->from_state = curr_state;
 		}
+		// // conditions for
+		// else if (in_parser_flag == 1 && name_flag == 1 && parse_states_flag == 0 && state_flag == 0
+		// 	 && transition_key_flag == 0 && value_flag == 0 && next_state_flag== 0){
+		//
+		// }
+		// else if (in_parser_flag == 1 && name_flag == 1 && parse_states_flag == 0 && state_flag == 0
+		// 	 && transition_key_flag == 0 && value_flag == 0 && next_state_flag== 0){
+		//
+		// }
 
 		return true;
 	}
@@ -172,13 +205,14 @@ struct MyHandler : public BaseReaderHandler<UTF8<>, MyHandler> {
 			arrcount_flag--;
 			if(arrcount_flag == 0){
 				in_parser_flag = 0;
-
 				//turn the rest of flags off too
-
+				reset_flags();
 			}
 		}
 		if(transition_key_flag == 1){
 			arr_flag = 0;
+			// turn off this flag because we are at the end of this section of the JSON
+			transition_key_flag = 0;
 		}
 
 		return true;
