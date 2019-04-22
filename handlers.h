@@ -59,7 +59,7 @@ void reset_flags(){
 	transition_key_flag = 0;
 	value_flag = 0;
 	arr_flag = 0;
-	transition_key_flag = 0;
+	transitions_flag = 0;
 	next_state_flag = 0;
 }
 
@@ -80,7 +80,10 @@ void second_pass(parser * _parser){
 				string lookup_str = (*transit_it)->str_to_state;
 				map<string, state*>::iterator map_it = (*parsers_it)->state_map.find(lookup_str);
 				
-				if(map_it == (*parsers_it)->state_map.end()){
+				if(lookup_str.compare("\0")==0){
+					;
+				}
+				else if(map_it == (*parsers_it)->state_map.end()){
 					cout << "Invalid state found: " << lookup_str << endl;
 				}
 				else{
@@ -100,6 +103,14 @@ void second_pass(parser * _parser){
 struct MyHandler : public BaseReaderHandler<UTF8<>, MyHandler> {
 	bool Null() {
 		//cout << "Null()" << endl;
+	if (in_parser_flag == 1 && name_flag == 0 && parse_states_flag == 1 && state_flag == 0
+              && transition_key_flag == 0 && value_flag == 0 && next_state_flag == 1 && transitions_flag == 1){
+                  curr_transit->str_to_state = "\0";
+				  curr_transit->to_state = NULL;
+                  curr_transit->from_state = curr_state;
+                  next_state_flag = 0;
+	}
+
 		return true;
 	}
 	bool Bool(bool b) {
@@ -130,17 +141,11 @@ struct MyHandler : public BaseReaderHandler<UTF8<>, MyHandler> {
 		//cout << "String(" << str << ", " << length << ", " << boolalpha << copy << ")" << endl;
 
 		// condition for if a new parser is beginning
-		if(in_parser_flag == 1 && name_flag == 0 && parse_states_flag == 0 && state_flag == 0 && transition_key_flag == 0 &&
+		if(in_parser_flag == 1 && name_flag == 1 && parse_states_flag == 0 && state_flag == 0 && transition_key_flag == 0 &&
 		   value_flag == 0 && next_state_flag== 0){
 			curr_parser = new parser;
 			parsers.push_back(curr_parser);
-		}
-		// condition for the name of the parser
-		else if (in_parser_flag == 1 && name_flag == 1 && parse_states_flag == 0 && state_flag == 0 && transition_key_flag == 0
-			 && value_flag == 0 && next_state_flag== 0){
 			curr_parser->name = str;
-
-			// reset flag
 			name_flag = 0;
 		}
 		// condition for grabbing the state name_flag
@@ -155,24 +160,32 @@ struct MyHandler : public BaseReaderHandler<UTF8<>, MyHandler> {
 			name_flag = 0;
 		}
 		// pushing the array that represents the array of fields of the transition key
-		else if (in_parser_flag == 1 && name_flag == 1 && transition_key_flag == 1 && value_flag == 1 && arr_flag == 1){
+		else if (in_parser_flag == 1 && name_flag == 0 && transition_key_flag == 1 && value_flag == 1 && arr_flag == 1){
+			// this is going to need to change because now
+			// this only adds the value type to the last transition
+			// need an example of a JSON if a transition depends on a different value
 			curr_transit->add_value_type(str);
+			
+			// not resetting value_flag beecause we are pushing an array so we 
+			// need to come back to this condition multiple times in a row 
+
 			//curr_state->value.push_back(str);
-		}
-		// condition for pushing the transition value to the list
-		else if (in_parser_flag == 1 && name_flag == 1 && parse_states_flag == 1 && state_flag == 0
-			 && transition_key_flag == 0 && value_flag == 1 && next_state_flag== 0){
-				string string_val(str);
-				curr_transit->value = string_val;
+		}	// condition for pushing the transition value to the list
+		else if (in_parser_flag == 1 && name_flag == 0 && parse_states_flag == 1 && state_flag == 0
+			 && transition_key_flag == 0 && value_flag == 1 && next_state_flag== 0 && transitions_flag == 1){
+				curr_transit = new transition;
+				curr_state->add_transit(curr_transit);
+				curr_transit->value = str;
 
 				 // reset flag
 				 value_flag = 0;
 		}
 		// condition for the next_state field of the transition
-		else if (in_parser_flag == 1 && name_flag == 1 && parse_states_flag == 0 && state_flag == 0
-			 && transition_key_flag == 0 && value_flag == 0 && next_state_flag == 1){
+		else if (in_parser_flag == 1 && name_flag == 0 && parse_states_flag == 1 && state_flag == 0
+			 && transition_key_flag == 0 && value_flag == 0 && next_state_flag == 1 && transitions_flag == 1){
 				 curr_transit->str_to_state = str;
 				 curr_transit->from_state = curr_state;
+				 next_state_flag = 0;
 		}
 
 		return true;
@@ -205,13 +218,16 @@ struct MyHandler : public BaseReaderHandler<UTF8<>, MyHandler> {
 			else if(string_str.compare("parse_states") == 0 ){
 				parse_states_flag = 1;
 			}
+			else if(string_str.compare("transitions") == 0){
+				transitions_flag = 1;
+			}
 			else if(string_str.compare("state") == 0){
 				state_flag = 1;
 			}
 			else if(string_str.compare("transition_key") == 0){
 				transition_key_flag = 1;
 			}
-			else if(string_str.compare("value") == 0){
+			else if((transitions_flag == 1 || transition_key_flag == 1) && string_str.compare("value") == 0){
 				value_flag = 1;
 			}
 			else if(string_str.compare("next_state") == 0){
