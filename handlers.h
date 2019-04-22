@@ -49,6 +49,9 @@ int transitions_flag = 0;
 
 int next_state_flag= 0;
 
+// implemented in handlers.cpp
+void second_pass();
+
 // sets all flags equal to 0
 void reset_flags(){
 	arrcount_flag = 0;
@@ -141,15 +144,6 @@ struct MyHandler : public BaseReaderHandler<UTF8<>, MyHandler> {
 				 curr_transit->str_to_state = str;
 				 curr_transit->from_state = curr_state;
 		}
-		// // conditions for
-		// else if (in_parser_flag == 1 && name_flag == 1 && parse_states_flag == 0 && state_flag == 0
-		// 	 && transition_key_flag == 0 && value_flag == 0 && next_state_flag== 0){
-		//
-		// }
-		// else if (in_parser_flag == 1 && name_flag == 1 && parse_states_flag == 0 && state_flag == 0
-		// 	 && transition_key_flag == 0 && value_flag == 0 && next_state_flag== 0){
-		//
-		// }
 
 		return true;
 	}
@@ -160,26 +154,37 @@ struct MyHandler : public BaseReaderHandler<UTF8<>, MyHandler> {
 	bool Key(const char* str, SizeType length, bool copy) {
 		//cout << "Key(" << str << ", " << length << ", " << boolalpha << copy << ")" << endl;
 		//if the key is "parsers" -> set a flag and start parsing into digital logic classes
-		if(str == "parsers"){
+		
+		//find the length of the key so we can 
+		//make the char* to a string
+		size_t str_length = 0;
+
+		while(str[str_length] != '\0'){
+			str_length++;
+		}
+
+		string string_str(str, str_length);
+		
+		if(string_str.compare("parsers") == 0){
 			//turn flag on and parse things into classes
 			in_parser_flag = 1;
 		} else if ( in_parser_flag == 1 ){
-			if(str == "name"){
+			if(string_str.compare("name") == 0){
 				name_flag = 1;
 			}
-			else if(str == "parse_states"){
+			else if(string_str.compare("parse_states") == 0 ){
 				parse_states_flag = 1;
 			}
-			else if(str == "state"){
+			else if(string_str.compare("state") == 0){
 				state_flag = 1;
 			}
-			else if(str == "transition_key"){
+			else if(string_str.compare("transition_key") == 0){
 				transition_key_flag = 1;
 			}
-			else if(str == "value"){
+			else if(string_str.compare("value") == 0){
 				value_flag = 1;
 			}
-			else if(str == "next_state"){
+			else if(string_str.compare("next_state") == 0){
 				next_state_flag= 1;
 			}
 		}
@@ -208,6 +213,10 @@ struct MyHandler : public BaseReaderHandler<UTF8<>, MyHandler> {
 				in_parser_flag = 0;
 				//turn the rest of flags off too
 				reset_flags();
+
+				//call a function here that will instigate the second pass
+				//to connect everything 
+				//second_pass();
 			}
 		}
 		if(transition_key_flag == 1){
