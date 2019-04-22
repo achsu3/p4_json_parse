@@ -60,6 +60,7 @@ struct parser{
     void add_state(state * _state){
       states.push_back(_state);
       //map it also
+	  state_map.insert(pair<string,state*>(_state->name, _state));
 
     }
 };

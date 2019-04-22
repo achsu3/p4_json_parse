@@ -49,9 +49,6 @@ int transitions_flag = 0;
 
 int next_state_flag= 0;
 
-// implemented in handlers.cpp
-void second_pass();
-
 // sets all flags equal to 0
 void reset_flags(){
 	arrcount_flag = 0;
@@ -66,6 +63,39 @@ void reset_flags(){
 	next_state_flag = 0;
 }
 
+
+// maps the states in the transitions 
+// necessary because, at first pass, all states have not been initialized in structs 
+void second_pass(parser * _parser){
+
+    list<parser*>::iterator parsers_it = parsers.begin();
+    while(parsers_it!=parsers.end()){
+            
+        list<state*>::iterator states_it = (*parsers_it)->states.begin();
+        while(states_it!=(*parsers_it)->states.end()){
+            
+			list<transition*>::iterator transit_it = (*states_it)->transitions.begin();
+            while(transit_it != (*states_it)->transitions.end()){
+    			
+				string lookup_str = (*transit_it)->str_to_state;
+				map<string, state*>::iterator map_it = (*parsers_it)->state_map.find(lookup_str);
+				
+				if(map_it == (*parsers_it)->state_map.end()){
+					cout << "Invalid state found: " << lookup_str << endl;
+				}
+				else{
+					(*transit_it)->to_state = map_it->second;
+				}
+
+                transit_it++;
+            }   
+                
+            states_it++;
+        }   
+            
+        parsers_it++;
+    }   
+}
 
 struct MyHandler : public BaseReaderHandler<UTF8<>, MyHandler> {
 	bool Null() {
@@ -216,7 +246,7 @@ struct MyHandler : public BaseReaderHandler<UTF8<>, MyHandler> {
 
 				//call a function here that will instigate the second pass
 				//to connect everything 
-				//second_pass();
+				second_pass(curr_parser);
 			}
 		}
 		if(transition_key_flag == 1){
