@@ -49,8 +49,11 @@ int main(){
             list<transition*>::iterator transit_it = (*states_it)->transitions.begin();
             while(transit_it != (*states_it)->transitions.end()){
     			cout<<"Transition from_state: " << (*transit_it)->from_state->name << endl;
-				cout<<"Transition to_state: " << (*transit_it)->from_state->name << endl;
-                cout<<"Transition value_type: " << endl;
+				if((*transit_it)->to_state == NULL){
+					cout<<"Transition to_state: NULL" << endl;
+				}
+				else cout<<"Transition to_state: " << (*transit_it)->to_state->name << endl;
+				cout<<"Transition value_type: " << endl;
 				// print all the value_type elements
 				list<string>::iterator value_t_it = (*transit_it)->value_type.begin();
 				while(value_t_it!=(*transit_it)->value_type.end()){

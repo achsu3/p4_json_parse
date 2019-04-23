@@ -32,7 +32,7 @@ struct transition{
     // probably based off of "parser_ops"
     list<string> value_type;
 
-    void add_value_type(string _val){
+	void add_value_type(string _val){
       value_type.push_back(_val);
     }
 
@@ -61,6 +61,6 @@ struct parser{
       states.push_back(_state);
       //map it also
 	  state_map.insert(pair<string,state*>(_state->name, _state));
-
+	  cout<< "inserted : " << _state->name << endl;
     }
 };

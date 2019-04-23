@@ -153,8 +153,12 @@ struct MyHandler : public BaseReaderHandler<UTF8<>, MyHandler> {
 			 && value_flag == 0 && next_state_flag== 0){
 			// make a new state and put it in the curr_parser's list
 			curr_state = new state;
-			curr_parser->add_state(curr_state);
 			curr_state->name = str;
+			
+			cout << "curr state name" << curr_state->name << endl;
+
+			curr_parser->add_state(curr_state);
+		
 
 			// reset flag
 			name_flag = 0;
@@ -169,14 +173,14 @@ struct MyHandler : public BaseReaderHandler<UTF8<>, MyHandler> {
 			// not resetting value_flag beecause we are pushing an array so we 
 			// need to come back to this condition multiple times in a row 
 
-			//curr_state->value.push_back(str);
+
 		}	// condition for pushing the transition value to the list
 		else if (in_parser_flag == 1 && name_flag == 0 && parse_states_flag == 1 && state_flag == 0
 			 && transition_key_flag == 0 && value_flag == 1 && next_state_flag== 0 && transitions_flag == 1){
 				curr_transit = new transition;
 				curr_state->add_transit(curr_transit);
 				curr_transit->value = str;
-
+				curr_transit->from_state = curr_state;
 				 // reset flag
 				 value_flag = 0;
 		}
@@ -184,6 +188,9 @@ struct MyHandler : public BaseReaderHandler<UTF8<>, MyHandler> {
 		else if (in_parser_flag == 1 && name_flag == 0 && parse_states_flag == 1 && state_flag == 0
 			 && transition_key_flag == 0 && value_flag == 0 && next_state_flag == 1 && transitions_flag == 1){
 				 curr_transit->str_to_state = str;
+				 
+				 cout << "str to state" << str << endl;
+				 
 				 curr_transit->from_state = curr_state;
 				 next_state_flag = 0;
 		}
@@ -225,6 +232,7 @@ struct MyHandler : public BaseReaderHandler<UTF8<>, MyHandler> {
 				state_flag = 1;
 			}
 			else if(string_str.compare("transition_key") == 0){
+				transitions_flag = 0;
 				transition_key_flag = 1;
 			}
 			else if((transitions_flag == 1 || transition_key_flag == 1) && string_str.compare("value") == 0){
@@ -269,6 +277,7 @@ struct MyHandler : public BaseReaderHandler<UTF8<>, MyHandler> {
 			arr_flag = 0;
 			// turn off this flag because we are at the end of this section of the JSON
 			transition_key_flag = 0;
+			value_flag = 0;
 		}
 
 		return true;
