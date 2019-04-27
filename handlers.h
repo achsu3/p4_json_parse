@@ -23,6 +23,11 @@ state * curr_state;
 // the transition that will be pushed to the list for this iteration
 transition * curr_transit;
 
+// the list of the values that the transitions for the curr_state depend on
+// necessary because we want to put them on the transitions, not the states
+// so the transitions are independent 
+list<string> transit_value_type;
+
 //will count the array starts and ends for the overall parser so we know when this
 //entire section is complete
 int arrcount_flag = 0;
@@ -155,10 +160,10 @@ struct MyHandler : public BaseReaderHandler<UTF8<>, MyHandler> {
 			curr_state = new state;
 			curr_state->name = str;
 			
-			cout << "curr state name" << curr_state->name << endl;
-
 			curr_parser->add_state(curr_state);
 		
+			// clear the transition value types list 
+			transit_value_type.clear();
 
 			// reset flag
 			name_flag = 0;
@@ -168,8 +173,18 @@ struct MyHandler : public BaseReaderHandler<UTF8<>, MyHandler> {
 			// this is going to need to change because now
 			// this only adds the value type to the last transition
 			// need an example of a JSON if a transition depends on a different value
-			curr_transit->add_value_type(str);
 			
+			//curr_transit->add_value_type(str);
+			
+			transit_value_type.push_back(str);
+
+			// put all the transition types into the transitions for this state 
+			list<transition*>::iterator transit_it = curr_state->transitions.begin();
+			while(transit_it!=curr_state->transitions.end()){
+				(*transit_it)->value_type = transit_value_type;
+				transit_it++;
+			}
+
 			// not resetting value_flag beecause we are pushing an array so we 
 			// need to come back to this condition multiple times in a row 
 
@@ -188,8 +203,6 @@ struct MyHandler : public BaseReaderHandler<UTF8<>, MyHandler> {
 		else if (in_parser_flag == 1 && name_flag == 0 && parse_states_flag == 1 && state_flag == 0
 			 && transition_key_flag == 0 && value_flag == 0 && next_state_flag == 1 && transitions_flag == 1){
 				 curr_transit->str_to_state = str;
-				 
-				 cout << "str to state" << str << endl;
 				 
 				 curr_transit->from_state = curr_state;
 				 next_state_flag = 0;

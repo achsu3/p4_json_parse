@@ -11,6 +11,9 @@
 using namespace rapidjson;
 using namespace std;
 
+#ifndef _PARSER_H
+#define _PARSER_H
+
 // defined so transition and state can use each other as members
 struct state;
 
@@ -61,6 +64,7 @@ struct parser{
       states.push_back(_state);
       //map it also
 	  state_map.insert(pair<string,state*>(_state->name, _state));
-	  cout<< "inserted : " << _state->name << endl;
     }
 };
+
+#endif /* _PARSER_H */

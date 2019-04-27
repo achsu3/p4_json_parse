@@ -3,7 +3,7 @@
 #include "include/rapidjson/prettywriter.h" //stringify JSON
 #include "include/rapidjson/filereadstream.h"
 #include "handlers.h"
-//#include "test.h"
+//#include "digital.h"
 #include <iostream>
 #include <fstream>
 
@@ -16,7 +16,7 @@ int main(){
 		printf("/n couldn't open file /n");
 		return -1;
 	}
-	printf("\n opened file \n");
+	
 
 	MyHandler handler;
 	Reader reader;
@@ -33,7 +33,7 @@ int main(){
 	StringStream s2(_json);
 	reader.Parse(s2, handler);
 
-//	test_parser(parsers);
+//	parse_digital();
 
 // putting logic for testing here because i couldn't get
 // anything to compile :-/ 
