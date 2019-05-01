@@ -3,7 +3,7 @@
 #include "include/rapidjson/prettywriter.h" //stringify JSON
 #include "include/rapidjson/filereadstream.h"
 #include "handlers.h"
-//#include "digital.h"
+#include "digital.h"
 #include <iostream>
 #include <fstream>
 
@@ -33,7 +33,7 @@ int main(){
 	StringStream s2(_json);
 	reader.Parse(s2, handler);
 
-//	parse_digital();
+	parse_digital();
 
 // putting logic for testing here because i couldn't get
 // anything to compile :-/ 

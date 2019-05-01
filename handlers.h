@@ -2,7 +2,7 @@
 #include "include/rapidjson/document.h" //DOM API
 #include "include/rapidjson/prettywriter.h" //stringify JSON
 #include "include/rapidjson/filereadstream.h"
-#include "digital_structs.h"
+
 #include "parser.h"
 #include <iostream>
 #include <list>
