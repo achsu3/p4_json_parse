@@ -118,6 +118,7 @@ list<Circuit*> parse_digital(list<Parser *>& parsers){
           next_state->output = mux_select_wire;
           mux_select_wire->from = next_state;
           mux_select_wire->add_to(transit_mux);
+		  transit_mux->addInput(mux_select_wire);
 
           Wire * mux_output_wire = new Wire();
           transit_mux->output = mux_output_wire;
