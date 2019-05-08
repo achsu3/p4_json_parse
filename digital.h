@@ -58,7 +58,10 @@ public:
 
 class Mux: public Circuit{
 public:
-  Mux();
+  Mux(){
+    select_input = NULL;
+    output = NULL;
+  };
   vector<Wire*> inputs;
   Wire * select_input;
   Wire * output;
@@ -162,7 +165,9 @@ public:
 // for connecting different components
 class Wire{
 public:
-  Wire();
+  Wire(){
+    from = NULL;
+  };
   Wire(Circuit * _to, Circuit * _from){
     to.push_back(_to);
     from = _from;
