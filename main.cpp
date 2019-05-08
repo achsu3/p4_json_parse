@@ -90,31 +90,87 @@ int main() {
 		else if(type == MUX){
 			cout<< "Mux:"<< endl;
 			Mux * mux = (Mux*) (*components_it);
-			cout<< "Inputs:"<< endl;
+			cout<< "Input from:"<< endl;
 			for(int i = 0; i < mux->inputs.size(); i++){
-				for(int j = 0; j<mux->inputs[i]->to.size(); j++){
-					cout << print_type(mux->inputs[i]->to[j]->getType())<<endl;
-				}
+				cout << print_type(mux->inputs[i]->from->getType())<<endl;
 			}
-			cout<<"Select Input: "<<endl;
-			for(int j = 0; j<mux->select_input->to.size(); j++){
-				cout << print_type(mux->select_input->to[i]->getType())<<endl;
+			cout<<"Select Input from: "<<endl;
+			cout << print_type(mux->select_input->from->getType())<<endl;
+
+			cout<<"Output to: "<<endl;
+			for(int j = 0; j<mux->output->to.size(); j++){
+				cout << print_type(mux->output->to[j]->getType())<<endl;
 			}
+
 		}
 		else if(type == AND){
 			cout<< "And:"<< endl;
+
+			And * _and = (And*) (*components_it);
+			cout<< "Input from:"<< endl;
+			cout << print_type(_and->input1->from->getType())<<endl;
+			cout << print_type(_and->input2->from->getType())<<endl;
+
+			cout<<"Output to: "<<endl;
+			for(int j = 0; j<_and->output->to.size(); j++){
+				cout << print_type(_and->output->to[j]->getType())<<endl;
+			}
+
 		}
 		else if(type == NOT){
 			cout<< "Not:"<< endl;
+
+			Not * _not = (Not*) (*components_it);
+			cout<< "Input from:"<< endl;
+			cout << print_type(_not->input1->from->getType())<<endl;
+			cout << print_type(_not->input2->from->getType())<<endl;
+
+			cout<<"Output to: "<<endl;
+			for(int j = 0; j<_not->output->to.size(); j++){
+				cout << print_type(_not->output->to[j]->getType())<<endl;
+			}
+
 		}
 		else if(type == NOR){
 			cout<< "Nor:"<< endl;
+
+			Nor * _nor = (Nor*) (*components_it);
+			cout<< "Input from:"<< endl;
+			cout << print_type(_nor->input1->from->getType())<<endl;
+			cout << print_type(_nor->input2->from->getType())<<endl;
+
+			cout<<"Output to: "<<endl;
+			for(int j = 0; j<_nor->output->to.size(); j++){
+				cout << print_type(_nor->output->to[j]->getType())<<endl;
+			}
+
 		}
 		else if(type == XOR){
 			cout<< "Xor:"<< endl;
+
+			Xor * _xor = (Xor*) (*components_it);
+			cout<< "Input from:"<< endl;
+			cout << print_type(_xor->input1->from->getType())<<endl;
+			cout << print_type(_xor->input2->from->getType())<<endl;
+
+			cout<<"Output to: "<<endl;
+			for(int j = 0; j<_xor->output->to.size(); j++){
+				cout << print_type(_xor->output->to[j]->getType())<<endl;
+			}
+
 		}
 		else if(type == XNOR){
 			cout<< "Xnor:"<< endl;
+
+			Xnor * _xnor = (Xnor*) (*components_it);
+			cout<< "Input from:"<< endl;
+			cout << print_type(_xnor->input1->from->getType())<<endl;
+			cout << print_type(_xnor->input2->from->getType())<<endl;
+
+			cout<<"Output to: "<<endl;
+			for(int j = 0; j<_xnor->output->to.size(); j++){
+				cout << print_type(_xnor->output->to[j]->getType())<<endl;
+			}
 		}
 		else if(type == CONSTANT_VALUE){
 			cout<< "Constant_value:"<< endl;
