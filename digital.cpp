@@ -75,6 +75,7 @@ list<Circuit*> parse_digital(list<Parser *>& parsers){
       //create a wire from the xnor
       Wire * state_xnor_out = new Wire();
       state_xnor_out->from = state_xnor;
+      state_xnor->output = state_xnor_out;
 
       // start iterating through transitions
 			list<Transition*>::iterator transit_it =
