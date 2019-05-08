@@ -45,6 +45,10 @@ list<Circuit*> parse_digital(list<Parser *>& parsers){
   components.push_back(control_flow);
 
   list<Parser*>::iterator parsers_it = parsers.begin();
+
+  Wire * last_mux_wire = NULL;
+  Mux * last_mux = NULL;
+
 	while(parsers_it!=parsers.end()) {
 
     // keeps track of where we are in connecting all the muxs together
@@ -242,19 +246,21 @@ list<Circuit*> parse_digital(list<Parser *>& parsers){
         mux_output_wire->from = transit_mux;
 
         prev_mux_wire = mux_output_wire;
+        last_mux_wire = prev_mux_wire;
+        last_mux = transit_mux;
 
 				transit_it++;
 			}
 
-      //check if the last mux output needs to be connected back to the control flow
-      if(prev_mux_wire->to.size() == 0){
-        // set to control flow
-        prev_mux_wire->add_to(control_flow);
-        control_flow->addInput(prev_mux_wire);
-      }
 
 			states_it++;
 		}
+
+    //check if the last mux output needs to be connected back to the control flow
+    // set to control flow
+    last_mux_wire->add_to(control_flow);
+    control_flow->addInput(last_mux_wire);
+
 
 		parsers_it++;
 	}
