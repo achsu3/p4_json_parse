@@ -108,10 +108,10 @@ int main() {
 
 			And * _and = (And*) (*components_it);
 			cout<< "Input from:"<< endl;
-			if(_and->input1->from){
+			if(_and->input1){
 				cout << print_type(_and->input1->from->getType())<<endl;
 			}
-			if(_and->input2->from){
+			if(_and->input2){
 				cout << print_type(_and->input2->from->getType())<<endl;
 			}
 			cout<<"Output to: "<<endl;
@@ -125,8 +125,10 @@ int main() {
 
 			Not * _not = (Not*) (*components_it);
 			cout<< "Input from:"<< endl;
-			cout << print_type(_not->input1->from->getType())<<endl;
-			cout << print_type(_not->input2->from->getType())<<endl;
+			if(_not->input1)
+				cout << print_type(_not->input1->from->getType())<<endl;
+			if(_not->input2)
+				cout << print_type(_not->input2->from->getType())<<endl;
 
 			cout<<"Output to: "<<endl;
 			for(int j = 0; j<_not->output->to.size(); j++){
