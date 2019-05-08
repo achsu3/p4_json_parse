@@ -13,6 +13,9 @@ void parse_digital(list<Parser *>& parsers){
 
 		list<State*>::iterator states_it = (*parsers_it)->get_states().begin();
 		while(states_it!=(*parsers_it)->get_states().end()) {
+
+      Wire * prev_xnor_wire = NULL;
+
       // be used to determine the select bit
       Wire * state_wire = new Wire();
       Constant_Value * _state = new Constant_Value((*states_it)->get_name(),state_wire);
@@ -41,6 +44,47 @@ void parse_digital(list<Parser *>& parsers){
 
         // make all the components
         Mux * transit_mux = new Mux();
+
+        // if this is the only transition there is
+        if((*transit_it)->to_state == NULL && prev_xnor_wire == NULL){
+          // create simple XNOR situation for the mux that
+          // only depends on whether the control flow
+          // has reached this state
+          state_xnor_out->add_to(transit_mux);
+          transit_mux->select_input = state_xnor_out;
+
+          // connect to the previous mux if there was one
+          if(prev_mux_wire){
+            prev_mux_wire->add_to(transit_mux);
+            transit_mux->addInput(prev_mux_wire);
+          }
+          //connect to control flow
+          else{
+            Wire * control_flow_default = new Wire;
+            control_flow_default->from = control_flow;
+            control_flow_default->add_to(transit_mux);
+            control_flow->addOutput(control_flow_default);
+            transit_mux->addInput(control_flow_default);
+          }
+
+          // do the next_state option for the mux - default
+          Constant_Value * next_state = new Constant_Value();
+          next_state->value = "Accept";
+          Wire * mux_select_wire = new Wire;
+          next_state->output = mux_select_wire;
+          mux_select_wire->from = next_state;
+          mux_select_wire->add_to(transit_mux);
+
+          Wire * mux_output_wire = new Wire();
+          transit_mux->output = mux_output_wire;
+          mux_output_wire->from = transit_mux;
+
+          prev_mux_wire = mux_output_wire;
+          transit_it ++;
+          continue;
+
+        }
+
         // connect the state_xnor to the and gate
         And * mux_select_and = new And();
         mux_select_and->input1 = state_xnor_out;
@@ -51,15 +95,21 @@ void parse_digital(list<Parser *>& parsers){
         mux_select_wire->from = mux_select_and;
         mux_select_wire->add_to(transit_mux);
         mux_select_and->output = mux_select_wire;
+        transit_mux->select_input = mux_select_wire;
 
         Wire * mux_state_wire = new Wire();
 
+        Constant_Value * next_state = new Constant_Value();
+        next_state->output = mux_state_wire;
+
         // this is the default case
         if ((*transit_it)->to_state == NULL){
-					cout<<"Transition to_state: NULL" << endl;
+					next_state->value = "Accept";
 				}
+        else{
+          next_state->value = (*transit_it)->to_state->get_name();
+        }
 
-        Constant_Value * next_state = new Constant_Value((*transit_it)->to_state->get_name(), mux_state_wire);
         // set the wire connecting the state to the mux
         mux_state_wire->from = next_state;
         mux_state_wire->add_to(transit_mux);
@@ -75,48 +125,64 @@ void parse_digital(list<Parser *>& parsers){
           transit_mux->addInput(mux_ctrl_fl_wire);
         }
         else{
-
+          prev_mux_wire->add_to(transit_mux);
+          transit_mux->addInput(prev_mux_wire);
         }
         // add the 1 input
         transit_mux->addInput(mux_state_wire);
 
         // create another XNOR situation for the other input to the AND gate that
         // controls the select bit for the mux
-        Xnor * value_xnor = new Xnor();
-        Wire * value_type_xnor_wire = new Wire();
-        value_type_xnor_wire->add_to(value_xnor);
-        value_xnor->input1 = value_type_xnor_wire;
+        if(prev_xnor_wire == NULL){
+          Xnor * value_xnor = new Xnor();
+          Wire * value_type_xnor_wire = new Wire();
+          value_type_xnor_wire->add_to(value_xnor);
+          value_xnor->input1 = value_type_xnor_wire;
 
-        Constant_Value * value_type = new Constant_Value();
-        value_type->value = "";
+          Constant_Value * value_type = new Constant_Value();
+          value_type->value = "";
 
-        value_type_xnor_wire->from = value_type;
-        value_type->output = value_type_xnor_wire;
+          value_type_xnor_wire->from = value_type;
+          value_type->output = value_type_xnor_wire;
 
-				// print all the value_type elements
-				list<string>::iterator value_t_it = (*transit_it)->value_type.begin();
-				while(value_t_it!=(*transit_it)->value_type.end()) {
-					value_type->value+= *value_t_it;
-					value_t_it++;
-				}
+          // print all the value_type elements
+          list<string>::iterator value_t_it = (*transit_it)->value_type.begin();
+          while(value_t_it!=(*transit_it)->value_type.end()) {
+            value_type->value+= *value_t_it;
+            value_t_it++;
+          }
 
-        // set the other input of the XNOR - the actual value
-        // you're comparing to
-        Wire * value_xnor_wire = new Wire();
-        value_xnor_wire->add_to(value_xnor);
-        value_xnor->input2 = value_xnor_wire;
+          // set the other input of the XNOR - the actual value
+          // you're comparing to
+          Wire * value_xnor_wire = new Wire();
+          value_xnor_wire->add_to(value_xnor);
+          value_xnor->input2 = value_xnor_wire;
 
-        Constant_Value * xnor_value = new Constant_Value();
-        xnor_value->value = (*transit_it)->value;
+          Constant_Value * xnor_value = new Constant_Value();
+          xnor_value->value = (*transit_it)->value;
 
-        value_xnor_wire->from = xnor_value;
-        xnor_value->output = value_xnor_wire;
+          value_xnor_wire->from = xnor_value;
+          xnor_value->output = value_xnor_wire;
 
-        // connect the xnor and the AND gate
-        Wire * value_xnor_to_and = new Wire();
-        value_xnor->output = value_xnor_to_and;
-        value_xnor_to_and->from = value_xnor;
-        value_xnor_to_and->add_to(mux_select_and);
+          // connect the xnor and the AND gate
+          Wire * value_xnor_to_and = new Wire();
+          value_xnor->output = value_xnor_to_and;
+          value_xnor_to_and->from = value_xnor;
+          value_xnor_to_and->add_to(mux_select_and);
+
+          prev_xnor_wire = value_xnor_to_and;
+        }
+        // if there already exists one for this part
+        // then just add a NOT gate
+        else{
+          Not * invert_xnor = new Not();
+          prev_xnor_wire->add_to(invert_xnor);
+          invert_xnor->input1 = prev_xnor_wire;
+          Wire * invert_to_and = new Wire();
+          invert_to_and->from = invert_xnor;
+          invert_to_and->add_to(mux_select_and);
+          invert_xnor->output = invert_to_and;
+        }
 
         // make an output wire for this MUX
         Wire * mux_output_wire = new Wire();
@@ -131,6 +197,8 @@ void parse_digital(list<Parser *>& parsers){
       //check if the last mux output needs to be connected back to the control flow
       if(prev_mux_wire->to.size() == 0){
         // set to control flow
+        prev_mux_wire->add_to(control_flow);
+        control_flow->addInput(prev_mux_wire);
       }
 
 			states_it++;
