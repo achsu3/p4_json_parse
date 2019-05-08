@@ -89,6 +89,17 @@ int main() {
 		}
 		else if(type == MUX){
 			cout<< "Mux:"<< endl;
+			Mux * mux = (Mux*) (*components_it);
+			cout<< "Inputs:"<< endl;
+			for(int i = 0; i < mux->inputs.size(); i++){
+				for(int j = 0; j<mux->inputs[i]->to.size(); j++){
+					cout << print_type(mux->inputs[i]->to[j]->getType())<<endl;
+				}
+			}
+			cout<<"Select Input: "<<endl;
+			for(int j = 0; j<mux->select_input->to.size(); j++){
+				cout << print_type(mux->select_input->to[i]->getType())<<endl;
+			}
 		}
 		else if(type == AND){
 			cout<< "And:"<< endl;
@@ -107,10 +118,14 @@ int main() {
 		}
 		else if(type == CONSTANT_VALUE){
 			cout<< "Constant_value:"<< endl;
-			//cout<< "Value: "<< (*components_it)->value<<endl;
+
+			Constant_Value * constand_val = (Constant_Value*)(*components_it);
+			cout<< "Value: "<< (constand_val) ->value<<endl;
 
 			// show what this is connected to
-			//cout<< "Output wire connected to: "<< (*components_it)->output->to->getType()<<endl;
+			for(int i = 0; i < constand_val->output->to.size(); i++){
+				cout<< "Output wire connected to: "<< print_type(constand_val->output->to[i]->getType())<<endl;
+			}
 		}
 		else if(type == CONTROL_FLOW){
 			cout<< "Control_flow:"<< endl;

@@ -3,6 +3,41 @@
 // global control flow
 Control_Flow * control_flow = new Control_Flow();
 
+//function to print the type of component
+string print_type(enum COMPONENT_TYPE type){
+
+  if(type == OOPS){
+    return "something went wrong";
+  }
+  else if(type == MUX){
+    return "Mux";
+  }
+  else if(type == AND){
+    return "And";
+  }
+  else if(type == NOT){
+    return "Not";
+  }
+  else if(type == NOR){
+    return "Nor";
+  }
+  else if(type == XOR){
+    return "Xor";
+  }
+  else if(type == XNOR){
+    return "Xnor";
+  }
+  else if(type == CONSTANT_VALUE){
+    return "Constant_value";
+
+  }
+  else if(type == CONTROL_FLOW){
+    return"Control_flow";
+  }
+
+  return "";
+}
+
 list<Circuit*> parse_digital(list<Parser *>& parsers){
 
   //list of all the components in this - excluding the wires

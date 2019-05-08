@@ -23,9 +23,7 @@ class Wire;
 class Circuit{
 public:
   COMPONENT_TYPE type;
-  COMPONENT_TYPE getType(){
-    return OOPS;
-  };
+  virtual COMPONENT_TYPE getType() = 0;
 };
 
 class Constant_Value: public Circuit{
@@ -196,5 +194,6 @@ public:
 
 // actual function that parses the FSM into digital structs
 list<Circuit*> parse_digital(list<Parser *>& parsers);
+string print_type(enum COMPONENT_TYPE type);
 
 #endif /* _DIGITAL_H */
