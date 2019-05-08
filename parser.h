@@ -1,70 +1,105 @@
-#include "stdlib.h"
-#include "include/rapidjson/document.h" //DOM API
-#include "include/rapidjson/prettywriter.h" //stringify JSON
-#include "include/rapidjson/filereadstream.h"
+#ifndef _PARSER_H
+#define _PARSER_H
 
+#include <stdlib.h>
 #include <string>
 #include <iostream>
 #include <map>
 #include <list>
 
-using namespace rapidjson;
+#include "include/rapidjson/document.h" //DOM API
+#include "include/rapidjson/prettywriter.h" //stringify JSON
+#include "include/rapidjson/filereadstream.h"
+
 using namespace std;
 
-#ifndef _PARSER_H
-#define _PARSER_H
-
 // defined so transition and state can use each other as members
-struct state;
+class State;
 
-struct transition{
-  public:
-    //pointer to the state this transition is coming from
-    state * from_state;
-    // "transitions"->"next_state"
-    // hold for the name of the next state
-    // that will determine what will be put in
-    // the pointer, since the next state hasn't
-    // been created yet
-    string str_to_state;
-    state * to_state;
-    // the value that triggers this next state
-    string value; //from;
+class Transition {
+public:
+	//pointer to the state this transition is coming from
+	State * from_state;
+	// "transitions"->"next_state"
+	// hold for the name of the next state
+	// that will determine what will be put in
+	// the pointer, since the next state hasn't
+	// been created yet
+	string str_to_state;
+	State * to_state;
+	// the value that triggers this next state
+	string value; //from;
 
-    // the value type that determines the transition
-    // probably based off of "parser_ops"
-    list<string> value_type;
+	// the value type that determines the transition
+	// probably based off of "parser_ops"
+	list<string> value_type;
 
-	void add_value_type(string _val){
-      value_type.push_back(_val);
-    }
-
+	void add_value_type(string v);
 };
 
-struct state{
-  public:
-    string name; // parse_states -> name
-    list<transition* > transitions;
+class State {
+private:
+	string name; // parse_states -> name
+	list<Transition* > transitions;
+public:
+	/** Constructor
+	 *
+	 * @n: the name for this state. This will be the key for this state
+	 * going forward
+	 *
+	 * @return nothing
+	 */
+	State(string n);
 
-    void add_transit(transition * _transit){
-      transitions.push_back(_transit);
-    }
+	/** add_transition - Add a transition out of this state
+	 *
+	 * @t: the transtition to add. must be going out of this state
+	 *
+	 * @return nothing
+	 */
+	void add_transition(Transition * t);
 
+	/* setters and getters */
+	string get_name() { return name; }
+	list<Transition *>& get_transitions() { return transitions; }
 };
 
-struct parser{
-  public:
-    string name; //first "name" after finding "parsers"
-    list<state *> states;
-    // maps all the states and the namespace
-    // needed for use in second pass of parse 
-    map<string,state *> state_map;
+class Parser {
+private:
+	//first "name" after finding "parsers"
+	string name;
+	// the list of all states in the parser
+	list<State *> states;
+	// maps all the states and the namespace
+	// needed for use in second pass of parse
+	map<string,State *> state_map;
+public:
+	/** constructor
+	 *
+	 * @s: the name of the parser
+	 *
+	 */
+	Parser(string s) { name = s; }
 
-    void add_state(state * _state){
-      states.push_back(_state);
-      //map it also
-	  state_map.insert(pair<string,state*>(_state->name, _state));
-    }
+	/** add_state - add a state to the parser
+	 *
+	 * @s: the state to add to the parser
+	 *
+	 * @return nothing
+	 */
+	void add_state(State *s);
+
+	/** lookup_state - Lookup a state by name
+	 *
+	 * @name: The name of the state to lookup
+	 *
+	 * @return the appropriate state if found, NULL otherwise
+	 */
+	State *lookup_state(string name);
+
+	/* setters and getters */
+	string get_name() { return name; }
+	list <State *>& get_states() { return states; }
 };
 
 #endif /* _PARSER_H */

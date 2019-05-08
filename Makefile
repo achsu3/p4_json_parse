@@ -1,7 +1,6 @@
 all: main.cpp
-	g++ -g main.cpp
-	#g++ -Wall -g -c -o digital.o digital.cpp
-	#g++ -Wall -g -o main main.o digital.o
+	#gcc -g -Wall -o main main.cpp
+	g++ -g main.cpp handlers.cpp parser.cpp digital.cpp
 
 clean:
 	$(RM) main
@@ -9,4 +8,3 @@ clean:
 #main.o: main.cpp parser.h digital.h
 
 #digital.o: digital.h
-
