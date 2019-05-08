@@ -26,6 +26,10 @@ public:
 
 class Constant_Value: public Circuit{
 public:
+  Constant_Value(){
+    value = "";
+    output = nullptr;
+  };
   Constant_Value(string _value, Wire * _output){
     output = _output;
     value = _value;
@@ -51,11 +55,10 @@ public:
     outputs.push_back(_wire);
   }
 };
-// global control flow
-Control_Flow * control_flow = new Control_Flow();
 
 class Mux: public Circuit{
 public:
+  Mux();
   vector<Wire*> inputs;
   Wire * select_input;
   Wire * output;
@@ -159,16 +162,17 @@ public:
 // for connecting different components
 class Wire{
 public:
-  Wire(){
-    to = NULL;
-    from = NULL;
-  }
+  Wire();
   Wire(Circuit * _to, Circuit * _from){
-    to = _to;
+    to.push_back(_to);
     from = _from;
   }
-  Circuit * to;
+  vector<Circuit *> to;
   Circuit * from;
+
+  void add_to(Circuit * _to){
+    to.push_back(_to);
+  }
 };
 
 // actual function that parses the FSM into digital structs
