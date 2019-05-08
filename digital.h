@@ -14,14 +14,18 @@ using namespace rapidjson;
 using namespace std;
 
 // types of gates
-enum GATE_TYPE{OOPS, MUX, AND, NOT, NOR, XOR, XNOR};
+enum COMPONENT_TYPE{OOPS, MUX, AND, NOT, NOR, XOR,
+  XNOR, CONSTANT_VALUE, CONTROL_FLOW};
 
 class Wire;
 
 // base class for all hardware components
 class Circuit{
 public:
-  GATE_TYPE type;
+  COMPONENT_TYPE type;
+  COMPONENT_TYPE getType(){
+    return OOPS;
+  };
 };
 
 class Constant_Value: public Circuit{
@@ -36,6 +40,10 @@ public:
   };
   string value;
   Wire * output;
+
+  COMPONENT_TYPE getType(){
+    return CONSTANT_VALUE;
+  };
 };
 
 // control flow
@@ -54,6 +62,9 @@ public:
   void addOutput(Wire* _wire){
     outputs.push_back(_wire);
   }
+  COMPONENT_TYPE getType(){
+    return CONTROL_FLOW;
+  };
 };
 
 class Mux: public Circuit{
@@ -69,6 +80,9 @@ public:
   void addInput(Wire* _wire){
     inputs.push_back(_wire);
   }
+  COMPONENT_TYPE getType(){
+    return MUX;
+  };
 
 };
 
@@ -77,7 +91,7 @@ public:
   Wire* input1;
   Wire* input2;
   Wire* output;
-  GATE_TYPE getType(){
+  COMPONENT_TYPE getType(){
     return OOPS;
   };
 };
@@ -93,7 +107,7 @@ public:
     input1 = _input1;
     input2 = _input2;
   };
-  GATE_TYPE getType(){
+  COMPONENT_TYPE getType(){
     return AND;
   }
 };
@@ -109,7 +123,7 @@ public:
     input1 = _input1;
     input2 = _input2;
   };
-  GATE_TYPE getType(){
+  COMPONENT_TYPE getType(){
     return NOT;
   }
 };
@@ -125,7 +139,7 @@ public:
     input1 = _input1;
     input2 = _input2;
   };
-  GATE_TYPE getType(){
+  COMPONENT_TYPE getType(){
     return NOR;
   }
 };
@@ -141,7 +155,7 @@ public:
     input1 = _input1;
     input2 = _input2;
   };
-  GATE_TYPE getType(){
+  COMPONENT_TYPE getType(){
     return XOR;
   }
 };
@@ -157,7 +171,7 @@ public:
     input1 = _input1;
     input2 = _input2;
   };
-  GATE_TYPE getType(){
+  COMPONENT_TYPE getType(){
     return XNOR;
   }
 };
@@ -181,79 +195,6 @@ public:
 };
 
 // actual function that parses the FSM into digital structs
-void parse_digital(list<Parser *>& parsers);
+list<Circuit*> parse_digital(list<Parser *>& parsers);
 
 #endif /* _DIGITAL_H */
-
-/*
-#define CTRL_FLOW	0
-#define STATE		1
-#define MUX			2
-#define AND			3
-#define NOT			4
-#define NOR			5
-#define XOR			6
-#define XNOR		7*/
-
-/*
-typedef struct Digital{
-	public:
-		list<Digital*> input;
-		Digital* output;
-		int struct_type;
-		// the state if the type is a state
-		State * _state;
-} Digital_t;
-
-// ugh i know it's bad to put this in the header but
-// i can't spend any more time debugging redefinition issues
-list<Digital_t *> parse_digital(){
-	// a list of every struct
-	list<Digital_t*> digital_structs;
-
-	//initialize the control_flow
-	Digital_t * control_flow = new Digital_t;
-	digital_structs.push_back(control_flow);
-	control_flow->struct_type = CTRL_FLOW;
-	control_flow->_state = NULL;
-
-	list<parser*>::iterator parsers_it = parsers.begin();
-    while(parsers_it!=parsers.end()){
-        //cout<< "Parser name:" << (*parsers_it)->name << endl;
-
-        list<State*>::iterator states_it = (*parsers_it)->states.begin();
-        while(states_it!=(*parsers_it)->states.end()){
-            //cout<< "State name: " << (*states_it)->name << endl;
-   			Digital_t * curr_state = new Digital_t;
-			digital_structs.push_back(curr_state);
-			curr_state->type = STATE;
-			curr_state->_state = *states_it;
-
-            list<transition*>::iterator transit_it = (*states_it)->transitions.begin();
-            while(transit_it != (*states_it)->transitions.end()){
-                cout<<"Transition from_state: " << (*transit_it)->from_state->name << endl;
-                if((*transit_it)->to_state == NULL){
-                    cout<<"Transition to_state: NULL" << endl;
-                }
-                else cout<<"Transition to_state: " << (*transit_it)->to_state->name << endl;
-                cout<<"Transition value_type: " << endl;
-                // print all the value_type elements
-                list<string>::iterator value_t_it = (*transit_it)->value_type.begin();
-                while(value_t_it!=(*transit_it)->value_type.end()){
-                    cout << *value_t_it<<endl;
-                    value_t_it++;
-                }
-                cout<<"Transition value: " << (*transit_it)->value << endl;
-
-                transit_it++;
-            }
-
-            states_it++;
-        }
-
-        parsers_it++;
-    }
-
-	return digital_structs;
-}
-*/

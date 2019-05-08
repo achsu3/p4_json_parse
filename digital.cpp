@@ -3,7 +3,11 @@
 // global control flow
 Control_Flow * control_flow = new Control_Flow();
 
-void parse_digital(list<Parser *>& parsers){
+list<Circuit*> parse_digital(list<Parser *>& parsers){
+
+  //list of all the components in this - excluding the wires
+  list<Circuit*> components;
+  components.push_back(control_flow);
 
   list<Parser*>::iterator parsers_it = parsers.begin();
 	while(parsers_it!=parsers.end()) {
@@ -19,9 +23,11 @@ void parse_digital(list<Parser *>& parsers){
       // be used to determine the select bit
       Wire * state_wire = new Wire();
       Constant_Value * _state = new Constant_Value((*states_it)->get_name(),state_wire);
+      components.push_back(_state);
       // set members for the wire
       state_wire->from = _state;
       Xnor* state_xnor = new Xnor;
+      components.push_back(state_xnor);
       state_wire->add_to(state_xnor);
       state_xnor->input1 = state_wire;
       // set a control flow wire
@@ -44,6 +50,7 @@ void parse_digital(list<Parser *>& parsers){
 
         // make all the components
         Mux * transit_mux = new Mux();
+        components.push_back(transit_mux);
 
         // if this is the only transition there is
         if((*transit_it)->to_state == NULL && prev_xnor_wire == NULL){
@@ -69,8 +76,9 @@ void parse_digital(list<Parser *>& parsers){
 
           // do the next_state option for the mux - default
           Constant_Value * next_state = new Constant_Value();
+          components.push_back(next_state);
           next_state->value = "Accept";
-          Wire * mux_select_wire = new Wire;
+          Wire * mux_select_wire = new Wire();
           next_state->output = mux_select_wire;
           mux_select_wire->from = next_state;
           mux_select_wire->add_to(transit_mux);
@@ -87,11 +95,12 @@ void parse_digital(list<Parser *>& parsers){
 
         // connect the state_xnor to the and gate
         And * mux_select_and = new And();
+        components.push_back(mux_select_and);
         mux_select_and->input1 = state_xnor_out;
         state_xnor_out->add_to(mux_select_and);
 
         //create wire from the and gate to the mux
-        Wire * mux_select_wire = new Wire;
+        Wire * mux_select_wire = new Wire();
         mux_select_wire->from = mux_select_and;
         mux_select_wire->add_to(transit_mux);
         mux_select_and->output = mux_select_wire;
@@ -100,6 +109,7 @@ void parse_digital(list<Parser *>& parsers){
         Wire * mux_state_wire = new Wire();
 
         Constant_Value * next_state = new Constant_Value();
+        components.push_back(next_state);
         next_state->output = mux_state_wire;
 
         // this is the default case
@@ -135,11 +145,13 @@ void parse_digital(list<Parser *>& parsers){
         // controls the select bit for the mux
         if(prev_xnor_wire == NULL){
           Xnor * value_xnor = new Xnor();
+          components.push_back(value_xnor);
           Wire * value_type_xnor_wire = new Wire();
           value_type_xnor_wire->add_to(value_xnor);
           value_xnor->input1 = value_type_xnor_wire;
 
           Constant_Value * value_type = new Constant_Value();
+          components.push_back(value_type);
           value_type->value = "";
 
           value_type_xnor_wire->from = value_type;
@@ -159,6 +171,7 @@ void parse_digital(list<Parser *>& parsers){
           value_xnor->input2 = value_xnor_wire;
 
           Constant_Value * xnor_value = new Constant_Value();
+          components.push_back(xnor_value);
           xnor_value->value = (*transit_it)->value;
 
           value_xnor_wire->from = xnor_value;
@@ -176,6 +189,7 @@ void parse_digital(list<Parser *>& parsers){
         // then just add a NOT gate
         else{
           Not * invert_xnor = new Not();
+          components.push_back(invert_xnor);
           prev_xnor_wire->add_to(invert_xnor);
           invert_xnor->input1 = prev_xnor_wire;
           Wire * invert_to_and = new Wire();
@@ -207,5 +221,5 @@ void parse_digital(list<Parser *>& parsers){
 		parsers_it++;
 	}
 
-  return;
+  return components;
 }
