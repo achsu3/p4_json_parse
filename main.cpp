@@ -108,9 +108,12 @@ int main() {
 
 			And * _and = (And*) (*components_it);
 			cout<< "Input from:"<< endl;
-			cout << print_type(_and->input1->from->getType())<<endl;
-			cout << print_type(_and->input2->from->getType())<<endl;
-
+			if(_and->input1->from){
+				cout << print_type(_and->input1->from->getType())<<endl;
+			}
+			if(_and->input2->from){
+				cout << print_type(_and->input2->from->getType())<<endl;
+			}
 			cout<<"Output to: "<<endl;
 			for(int j = 0; j<_and->output->to.size(); j++){
 				cout << print_type(_and->output->to[j]->getType())<<endl;

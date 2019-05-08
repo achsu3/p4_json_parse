@@ -218,6 +218,7 @@ list<Circuit*> parse_digital(list<Parser *>& parsers){
           value_xnor->output = value_xnor_to_and;
           value_xnor_to_and->from = value_xnor;
           value_xnor_to_and->add_to(mux_select_and);
+          mux_select_and->input2 = value_xnor_to_and;
 
           prev_xnor_wire = value_xnor_to_and;
         }
