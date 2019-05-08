@@ -79,46 +79,45 @@ int main() {
 	// now translate to digital things
 	list<Circuit*> circuit_components = parse_digital(handler.get_parsers());
 
-/*
 	// test for the digital version by traversing the components pushed
 	list<Circuit*>::iterator components_it = circuit_components.begin();
 	while(components_it != circuit_components.end()){
 		// print all the things this is attached to and the wires
-		COMPONENT_TYPE type = (*components_it)->getType();
-		if(COMPONENT_TYPE == OOPS){
+		enum COMPONENT_TYPE type = (*components_it)->getType();
+		if(type == OOPS){
 			cout<< "something went wrong"<< endl;
 		}
-		else if(COMPONENT_TYPE == MUX){
+		else if(type == MUX){
 			cout<< "Mux:"<< endl;
 		}
-		else if(COMPONENT_TYPE == AND){
+		else if(type == AND){
 			cout<< "And:"<< endl;
 		}
-		else if(COMPONENT_TYPE == NOT){
+		else if(type == NOT){
 			cout<< "Not:"<< endl;
 		}
-		else if(COMPONENT_TYPE == NOR){
+		else if(type == NOR){
 			cout<< "Nor:"<< endl;
 		}
-		else if(COMPONENT_TYPE == XOR){
+		else if(type == XOR){
 			cout<< "Xor:"<< endl;
 		}
-		else if(COMPONENT_TYPE == XNOR){
+		else if(type == XNOR){
 			cout<< "Xnor:"<< endl;
 		}
-		else if(COMPONENT_TYPE == CONSTANT_VALUE){
+		else if(type == CONSTANT_VALUE){
 			cout<< "Constant_value:"<< endl;
-			cout<< "Value: "<< (*components_it)->value<<endl;
+			//cout<< "Value: "<< (*components_it)->value<<endl;
 
 			// show what this is connected to
-			cout<< "Output wire connected to: "<< (*components_it)->output->to->getType()<<endl;
+			//cout<< "Output wire connected to: "<< (*components_it)->output->to->getType()<<endl;
 		}
-		else if(COMPONENT_TYPE == CONTROL_FLOW){
+		else if(type == CONTROL_FLOW){
 			cout<< "Control_flow:"<< endl;
 		}
 
 		components_it++;
-	}*/
+	}
 
 	return 0;
 }
