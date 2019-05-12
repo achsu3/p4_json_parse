@@ -36,7 +36,7 @@ MyHandler::second_pass()
 					(*parsers_it)->lookup_state(lookup_str);
 				if (s) {
 					(*transit_it)->to_state = s;
-				} else {
+				} else if ((lookup_str.compare("\0") != 0)){
 					cout << "Invalid state found: " <<
 						lookup_str << endl;
 				}
@@ -71,7 +71,7 @@ MyHandler::String(const char* str, SizeType length, bool copy)
 
 		curr_parser->add_state(curr_state);
 
-		// clear the transition value types list 
+		// clear the transition value types list
 		transit_value_type.clear();
 
 		// reset flag
@@ -88,15 +88,15 @@ MyHandler::String(const char* str, SizeType length, bool copy)
 
 		transit_value_type.push_back(str);
 
-		// put all the transition types into the transitions for this state 
+		// put all the transition types into the transitions for this state
 		list<Transition*>::iterator transit_it = curr_state->get_transitions().begin();
 		while(transit_it!=curr_state->get_transitions().end()){
 			(*transit_it)->value_type = transit_value_type;
 			transit_it++;
 		}
 
-		// not resetting value_flag beecause we are pushing an array so we 
-		// need to come back to this condition multiple times in a row 
+		// not resetting value_flag beecause we are pushing an array so we
+		// need to come back to this condition multiple times in a row
 
 
 	}	// condition for pushing the transition value to the list
