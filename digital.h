@@ -22,7 +22,6 @@ class Wire;
 // base class for all hardware components
 class Circuit{
 public:
-  COMPONENT_TYPE type;
   virtual COMPONENT_TYPE getType() = 0;
 };
 

@@ -128,8 +128,10 @@ list<Circuit*> parse_digital(list<Parser *>& parsers){
           transit_mux->output = mux_output_wire;
           mux_output_wire->from = transit_mux;
 
-          prev_mux_wire = mux_output_wire;
-          transit_it ++;
+		  prev_mux_wire = mux_output_wire;t
+        last_mux_wire = prev_mux_wire;
+        last_mux = transit_mux;
+		  transit_it ++;
           continue;
 
         }
