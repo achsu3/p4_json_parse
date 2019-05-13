@@ -3,4 +3,4 @@ all: main.cpp
 	g++ -g main.cpp handlers.cpp parser.cpp
 
 clean:
-	$(RM) main
+	$(RM) *.o *.out
