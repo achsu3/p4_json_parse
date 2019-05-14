@@ -14,73 +14,103 @@ using namespace rapidjson;
 using namespace std;
 
 // types of gates
-enum COMPONENT_TYPE{OOPS, MUX, AND, NOT, NOR, XOR,
-  XNOR, CONSTANT_VALUE, CONTROL_FLOW};
+enum ComponentType {
+	Mux = 0,
+	And = 1,
+	Not = 2,
+	Nor = 3,
+	Xor = 4,
+	Xnor = 5,
+	Const = 6,
+	Register = 7,
+	LastOne /* always keep this at the end */
+};
+
+const char *ComponentNames[] = {
+	"mux", "and", "not", "nor", "xor", "xnor", "constant", "register"
+};
 
 class Wire;
 
 // base class for all hardware components
 class Circuit{
 public:
-  virtual COMPONENT_TYPE getType() = 0;
+	virtual ComponentType get_type() = 0;
 };
 
-class Constant_Value: public Circuit{
+class Constant : public Circuit{
+private:
+	string m_value;
+	Wire *m_output;
 public:
-  Constant_Value(){
-    value = "";
-    output = nullptr;
-  };
-  Constant_Value(string _value, Wire * _output){
-    output = _output;
-    value = _value;
-  };
-  string value;
-  Wire * output;
+	/* Constructor for the constant component
+	 *
+	 * @t_value: string: The value of the constant
+	 * @m_output: wite ptr: The output wirte, can be null!
+	 */
+	Constant(string t_value, Wire *t_output)
+		: value(t_value), m_output(t_output)
+	{
+	}
 
-  COMPONENT_TYPE getType(){
-    return CONSTANT_VALUE;
-  };
+	ComponentType get_type(){
+		return Const;
+	}
 };
 
 // control flow
-class Control_Flow: public Circuit{
+class Register: public Circuit {
 public:
-  Control_Flow(){
-    return;
-  }
-  vector<Wire*> inputs;
-  vector<Wire*> outputs;
+	Control_Flow()
+	{
+	}
 
-  void addInput(Wire* _wire){
-    inputs.push_back(_wire);
-  }
+	void add_input(Wire *t_wire) {
+		inputs.push_back(t_wire);
+	}
 
-  void addOutput(Wire* _wire){
-    outputs.push_back(_wire);
-  }
-  COMPONENT_TYPE getType(){
-    return CONTROL_FLOW;
-  };
+	void add_output(Wire *t_wire) {
+		outputs.push_back(_wire);
+	}
+
+	ComponentType get_type() {
+		return Register;
+	}
+
+	vector<Wire *>& get_inputs() { return m_inputs; }
+	vector<Wire *>& get_ouptputs() { return m_outputs; }
+private:
+	vector <Wire *> m_inputs;
+	vector <Wire *> m_outputs;
 };
 
-class Mux: public Circuit{
+class Mux: public Circuit {
 public:
-  Mux(){
-    select_input = NULL;
-    output = NULL;
-  };
-  vector<Wire*> inputs;
-  Wire * select_input;
-  Wire * output;
+	Mux() : m_select(nullptr), m_output(nullptr)
+	{
+	}
 
-  void addInput(Wire* _wire){
-    inputs.push_back(_wire);
-  }
-  COMPONENT_TYPE getType(){
-    return MUX;
-  };
+	Mux(Wire *t_select, Wite *t_output)
+		: m_select(t_select), m_output(t_output)
+	{
+	}
 
+	void add_input(Wire *t_wire) {
+		m_inputs.push_back(t_wire);
+	}
+
+	ComponentType get_type() {
+		return MUX;
+	}
+
+	Wire * get_output const { return m_output; }
+	Wire * get_select const { return m_select; }
+	vector<Wire *>& get_inputs() { return m_inputs; }
+
+private:
+	Wire *m_select;
+	Wire *m_output;
+	vector<Wire *> m_inputs;
 };
 
 class Gate: public Circuit{

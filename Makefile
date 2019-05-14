@@ -3,4 +3,4 @@ all: main.cpp
 	g++ -g -std=c++0x main.cpp handlers.cpp parser.cpp digital.cpp
 
 clean:
-	$(RM) *.o *.out
+	$(RM) -rf *.o *.out *.dSYM
