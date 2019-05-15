@@ -1,7 +1,6 @@
 #ifndef _DIGITAL_H
 #define _DIGITAL_H
 
-#include <stdlib.h>
 #include <string>
 #include <iostream>
 #include <map>
@@ -10,219 +9,205 @@
 
 #include "parser.h"
 
-using namespace rapidjson;
-using namespace std;
-
 // types of gates
 enum ComponentType {
-	Mux = 0,
-	And = 1,
-	Not = 2,
-	Nor = 3,
-	Xor = 4,
-	Xnor = 5,
-	Const = 6,
-	Register = 7,
+	tUndefined = 0,
+	tMux = 1,
+	tAnd = 1 << 1,
+	tNot = 1 << 2,
+	tNor = 1 << 3,
+	tXor = 1 << 4,
+	tXnor = 1 << 5,
+	tConst = 1 << 6,
+	tRegister = 1 << 7,
+	tGate = 1 << 8,
 	LastOne /* always keep this at the end */
 };
 
+// helpers for type checks
+#define IS_MUX(X) X->get_type() & tMux
+#define IS_AND(X) X->get_type() & tAnd
+#define IS_OR(X) X->get_type() & tOr
+#define IS_NOT(X) X->get_type() & tNot
+#define IS_NOR(X) X->get_type() & tNor
+#define IS_XOR(X) X->get_type() & tXor
+#define IS_XNOR(X) X->get_type() & tXnor
+#define IS_CONSTANT(X) X->get_type() & tConst
+#define IS_REGISTER(X) X->get_type() & tRegister
+#define IS_GATE(X) X->get_type() & tGate
+
+#define ADD_INPUTS(T)							\
+	size_t add_inputs(std::initializer_list<T> l)			\
+	{								\
+		m_inputs.insert(m_inputs.end(), l.begin(), l.end());	\
+		return m_inputs.size();					\
+	}								\
+	size_t get_num_inputs() const					\
+	{								\
+		return m_inputs.size();					\
+	}
+
+
 const char *ComponentNames[] = {
-	"mux", "and", "not", "nor", "xor", "xnor", "constant", "register"
+	"mux", "and", "not", "nor", "xor", "xnor", "constant", "register", "gate"
 };
 
-class Wire;
+class CComponent;
+
+// for connecting different components
+class Wire {
+private:
+	CComponent *m_src;
+	std::vector<CComponent *> m_dst;
+public:
+	Wire() : m_src(nullptr)
+	{
+	}
+
+	Wire(CComponent *t_src) : m_src(t_src)
+	{
+	}
+
+	Wire(CComponent *t_src, std::initializer_list<CComponent *> t_list) :
+		m_src(t_src)
+	{
+		m_dst.insert(m_dst.end(), t_list.begin(), t_list.end());
+	}
+
+	size_t add_destination(std::initializer_list<CComponent *> t_list)
+	{
+		m_dst.insert(m_dst.end(), t_list.begin(), t_list.end());
+	}
+
+	std::vector<CComponent *>& get_destinations() { return m_dst; }
+	CComponent * get_src() { return m_src; }
+};
 
 // base class for all hardware components
-class Circuit{
+class CComponent {
+protected:
+	// The type of the circuit component
+	int m_type;
 public:
-	virtual ComponentType get_type() = 0;
+	CComponent() { m_type = tUndefined; }
+
+	int get_type() const { return m_type; }
 };
 
-class Constant : public Circuit{
+/** CGate - A circuit gate
+ *
+ * This extends the circuit component for all circuit gates
+ */
+class CGate : public CComponent {
 private:
-	string m_value;
+	std::vector<Wire *> m_inputs;
+	Wire *m_output;
+public:
+	CGate() : CComponent ()
+	{
+		m_type |= tGate;
+	}
+
+	CGate(std::initializer_list<Wire *> t_list) : CComponent()
+	{
+		m_inputs.insert(m_inputs.end(), t_list.begin(), t_list.end());
+	}
+
+	ADD_INPUTS(Wire *)
+
+	std::vector<Wire *>& get_inputs() { return m_inputs; }
+	Wire *get_output() { return m_output; }
+};
+
+class Constant : public CComponent {
+private:
+	std::string m_value;
 	Wire *m_output;
 public:
 	/* Constructor for the constant component
 	 *
 	 * @t_value: string: The value of the constant
-	 * @m_output: wite ptr: The output wirte, can be null!
 	 */
-	Constant(string t_value, Wire *t_output)
-		: value(t_value), m_output(t_output)
+	Constant(std::string& t_value)
+		: CComponent(), m_value(t_value), m_output(new Wire(this))
 	{
-	}
-
-	ComponentType get_type(){
-		return Const;
+		m_type |= tConst;
 	}
 };
 
 // control flow
-class Register: public Circuit {
+class Register: public CComponent {
 public:
-	Control_Flow()
+	Register() : CComponent(), m_output(new Wire(this))
 	{
+		m_type |= tRegister;
 	}
 
-	void add_input(Wire *t_wire) {
-		inputs.push_back(t_wire);
+	Register(std::initializer_list<Wire *> t_inputs) : CComponent()
+							   , m_output(new Wire(this))
+	{
+		m_type |= tRegister;
+
+		m_inputs.insert(m_inputs.end(),
+				t_inputs.begin(), t_inputs.end());
 	}
 
-	void add_output(Wire *t_wire) {
-		outputs.push_back(_wire);
-	}
+	ADD_INPUTS(Wire *)
 
-	ComponentType get_type() {
-		return Register;
-	}
-
-	vector<Wire *>& get_inputs() { return m_inputs; }
-	vector<Wire *>& get_ouptputs() { return m_outputs; }
+	std::vector<Wire *>& get_inputs() { return m_inputs; }
+	Wire *get_output() { return m_output; }
 private:
-	vector <Wire *> m_inputs;
-	vector <Wire *> m_outputs;
+	std::vector<Wire *> m_inputs;
+	Wire *m_output;
 };
 
-class Mux: public Circuit {
+class Mux: public CComponent {
 public:
-	Mux() : m_select(nullptr), m_output(nullptr)
+	Mux() : CComponent(), m_select(nullptr), m_output(new Wire(this))
 	{
+		m_type |= tMux;
 	}
 
-	Mux(Wire *t_select, Wite *t_output)
-		: m_select(t_select), m_output(t_output)
+	Mux(Wire *t_select)
+		: CComponent(), m_select(t_select), m_output(new Wire(this))
 	{
+		m_type |= tMux;
 	}
 
-	void add_input(Wire *t_wire) {
-		m_inputs.push_back(t_wire);
-	}
+	ADD_INPUTS(Wire *)
 
-	ComponentType get_type() {
-		return MUX;
-	}
-
-	Wire * get_output const { return m_output; }
-	Wire * get_select const { return m_select; }
-	vector<Wire *>& get_inputs() { return m_inputs; }
+	Wire *get_output() const { return m_output; }
+	Wire *get_select() const { return m_select; }
+	std::vector<Wire *>& get_inputs() { return m_inputs; }
 
 private:
 	Wire *m_select;
 	Wire *m_output;
-	vector<Wire *> m_inputs;
+	std::vector<Wire *> m_inputs;
 };
 
-class Gate: public Circuit{
-public:
-  Wire* input1;
-  Wire* input2;
-  Wire* output;
-  COMPONENT_TYPE getType(){
-    return OOPS;
-  };
-};
+// helper to create new gates
+#define CREATE_GATE(NAME, TYPE)							\
+	class NAME : public CGate {						\
+	public:									\
+		NAME () : CGate ()						\
+		{								\
+			m_type |= TYPE;						\
+		}								\
+		NAME(std::initializer_list<Wire *> t_list) : CGate(t_list)	\
+		{								\
+			m_type |= TYPE;						\
+		}								\
+	};
 
-class And: public Gate{
-public:
-  And(){
-    input1 = NULL;
-    input2 = NULL;
-    output = NULL;
-  }
-  And(Wire* _input1, Wire* _input2){
-    input1 = _input1;
-    input2 = _input2;
-  };
-  COMPONENT_TYPE getType(){
-    return AND;
-  }
-};
-
-class Not: public Gate{
-public:
-  Not(){
-    input1 = NULL;
-    input2 = NULL;
-    output = NULL;
-  }
-  Not(Wire* _input1, Wire* _input2){
-    input1 = _input1;
-    input2 = _input2;
-  };
-  COMPONENT_TYPE getType(){
-    return NOT;
-  }
-};
-
-class Nor: public Gate{
-public:
-  Nor(){
-    input1 = NULL;
-    input2 = NULL;
-    output = NULL;
-  }
-  Nor(Wire* _input1, Wire* _input2){
-    input1 = _input1;
-    input2 = _input2;
-  };
-  COMPONENT_TYPE getType(){
-    return NOR;
-  }
-};
-
-class Xor: public Gate{
-public:
-  Xor(){
-    input1 = NULL;
-    input2 = NULL;
-    output = NULL;
-  }
-  Xor(Wire* _input1, Wire* _input2){
-    input1 = _input1;
-    input2 = _input2;
-  };
-  COMPONENT_TYPE getType(){
-    return XOR;
-  }
-};
-
-class Xnor: public Gate{
-public:
-  Xnor(){
-    input1 = NULL;
-    input2 = NULL;
-    output = NULL;
-  }
-  Xnor(Wire* _input1, Wire* _input2){
-    input1 = _input1;
-    input2 = _input2;
-  };
-  COMPONENT_TYPE getType(){
-    return XNOR;
-  }
-};
-
-// for connecting different components
-class Wire{
-public:
-  Wire(){
-    from = NULL;
-  };
-  Wire(Circuit * _to, Circuit * _from){
-    to.push_back(_to);
-    from = _from;
-  }
-  vector<Circuit *> to;
-  Circuit * from;
-
-  void add_to(Circuit * _to){
-    to.push_back(_to);
-  }
-};
+CREATE_GATE(AndGate, tAnd)
+CREATE_GATE(Inverter, tNot)
+CREATE_GATE(NorGate, tNor)
+CREATE_GATE(XorGate, tXor)
+CREATE_GATE(XnorGate, tXnor)
 
 // actual function that parses the FSM into digital structs
-list<Circuit*> parse_digital(list<Parser *>& parsers);
-string print_type(enum COMPONENT_TYPE type);
+std::list<CComponent*> parse_digital(std::list<Parser *>& parsers);
+std::string print_type(int type);
 
 #endif /* _DIGITAL_H */
