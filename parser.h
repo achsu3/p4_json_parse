@@ -11,8 +11,6 @@
 #include "include/rapidjson/prettywriter.h" //stringify JSON
 #include "include/rapidjson/filereadstream.h"
 
-using namespace std;
-
 // defined so transition and state can use each other as members
 class State;
 
@@ -25,22 +23,22 @@ public:
 	// that will determine what will be put in
 	// the pointer, since the next state hasn't
 	// been created yet
-	string str_to_state;
+	std::string str_to_state;
 	State * to_state;
 	// the value that triggers this next state
-	string value; //from;
+	std::string value; //from;
 
 	// the value type that determines the transition
 	// probably based off of "parser_ops"
-	list<string> value_type;
+	std::list<std::string> value_type;
 
-	void add_value_type(string v);
+	void add_value_type(std::string v);
 };
 
 class State {
 private:
-	string name; // parse_states -> name
-	list<Transition* > transitions;
+	std::string name; // parse_states -> name
+	std::list<Transition* > transitions;
 public:
 	/** Constructor
 	 *
@@ -49,7 +47,7 @@ public:
 	 *
 	 * @return nothing
 	 */
-	State(string n);
+	State(std::string n);
 
 	/** add_transition - Add a transition out of this state
 	 *
@@ -60,26 +58,26 @@ public:
 	void add_transition(Transition * t);
 
 	/* setters and getters */
-	string get_name() { return name; }
-	list<Transition *>& get_transitions() { return transitions; }
+	std::string get_name() { return name; }
+	std::list<Transition *>& get_transitions() { return transitions; }
 };
 
 class Parser {
 private:
 	//first "name" after finding "parsers"
-	string name;
+	std::string name;
 	// the list of all states in the parser
-	list<State *> states;
+	std::list<State *> states;
 	// maps all the states and the namespace
 	// needed for use in second pass of parse
-	map<string,State *> state_map;
+	std::map<std::string,State *> state_map;
 public:
 	/** constructor
 	 *
 	 * @s: the name of the parser
 	 *
 	 */
-	Parser(string s) { name = s; }
+	Parser(std::string s) { name = s; }
 
 	/** add_state - add a state to the parser
 	 *
@@ -95,11 +93,11 @@ public:
 	 *
 	 * @return the appropriate state if found, NULL otherwise
 	 */
-	State *lookup_state(string name);
+	State *lookup_state(std::string name);
 
 	/* setters and getters */
-	string get_name() { return name; }
-	list <State *>& get_states() { return states; }
+	std::string get_name() { return name; }
+	std::list <State *>& get_states() { return states; }
 };
 
 #endif /* _PARSER_H */

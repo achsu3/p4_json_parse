@@ -1,5 +1,7 @@
 #include "parser.h"
 
+using namespace std;
+
 void
 Transition::add_value_type(string v)
 {
