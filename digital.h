@@ -2,7 +2,7 @@
 #define _DIGITAL_H
 
 #include <string>
-#include <iostream>
+#include <sstream>
 #include <map>
 #include <list>
 #include <vector>
@@ -27,7 +27,6 @@ enum ComponentType {
 // helpers for type checks
 #define IS_MUX(X) X->get_type() & tMux
 #define IS_AND(X) X->get_type() & tAnd
-#define IS_OR(X) X->get_type() & tOr
 #define IS_NOT(X) X->get_type() & tNot
 #define IS_NOR(X) X->get_type() & tNor
 #define IS_XOR(X) X->get_type() & tXor
@@ -45,43 +44,26 @@ enum ComponentType {
 	size_t get_num_inputs() const					\
 	{								\
 		return m_inputs.size();					\
+	}								\
+	std::vector<T>& get_inputs()					\
+	{								\
+		return m_inputs;					\
 	}
 
-
-const char *ComponentNames[] = {
-	"mux", "and", "not", "nor", "xor", "xnor", "constant", "register", "gate"
-};
-
-class CComponent;
-
-// for connecting different components
-class Wire {
-private:
-	CComponent *m_src;
-	std::vector<CComponent *> m_dst;
-public:
-	Wire() : m_src(nullptr)
-	{
+#define ADD_OUTPUTS(T)							\
+	size_t add_outputs(std::initializer_list<T> l)			\
+	{								\
+		m_outputs.insert(m_outputs.end(), l.begin(), l.end());	\
+		return m_outputs.size();				\
+	}								\
+	size_t get_num_outputs() const					\
+	{								\
+		return m_outputs.size();				\
+	}								\
+	std::vector<T>& get_outputs()					\
+	{								\
+		return m_outputs;					\
 	}
-
-	Wire(CComponent *t_src) : m_src(t_src)
-	{
-	}
-
-	Wire(CComponent *t_src, std::initializer_list<CComponent *> t_list) :
-		m_src(t_src)
-	{
-		m_dst.insert(m_dst.end(), t_list.begin(), t_list.end());
-	}
-
-	size_t add_destination(std::initializer_list<CComponent *> t_list)
-	{
-		m_dst.insert(m_dst.end(), t_list.begin(), t_list.end());
-	}
-
-	std::vector<CComponent *>& get_destinations() { return m_dst; }
-	CComponent * get_src() { return m_src; }
-};
 
 // base class for all hardware components
 class CComponent {
@@ -92,6 +74,15 @@ public:
 	CComponent() { m_type = tUndefined; }
 
 	int get_type() const { return m_type; }
+
+	/** to_str - Build a string representation of the component
+	 *
+	 * @param:ss: A string stream to keep manipulating
+	 *  :type: ostringstream
+	 *
+	 * @return: an reference to the same output stream
+	 */
+	virtual std::ostringstream& to_str(std::ostringstream& ss) const = 0;
 };
 
 /** CGate - A circuit gate
@@ -100,51 +91,54 @@ public:
  */
 class CGate : public CComponent {
 private:
-	std::vector<Wire *> m_inputs;
-	Wire *m_output;
+	std::vector<CComponent *> m_inputs;
+	std::vector<CComponent *> m_outputs;
 public:
 	CGate() : CComponent ()
 	{
 		m_type |= tGate;
 	}
 
-	CGate(std::initializer_list<Wire *> t_list) : CComponent()
+	CGate(std::initializer_list<CComponent *> t_list) : CComponent()
 	{
 		m_inputs.insert(m_inputs.end(), t_list.begin(), t_list.end());
 	}
 
-	ADD_INPUTS(Wire *)
+	std::ostringstream& to_str(std::ostringstream& ss) const;
 
-	std::vector<Wire *>& get_inputs() { return m_inputs; }
-	Wire *get_output() { return m_output; }
+	ADD_INPUTS(CComponent *)
+	ADD_OUTPUTS(CComponent *)
 };
 
 class Constant : public CComponent {
 private:
 	std::string m_value;
-	Wire *m_output;
+	std::vector<CComponent *> m_outputs;
 public:
 	/* Constructor for the constant component
 	 *
 	 * @t_value: string: The value of the constant
 	 */
 	Constant(std::string& t_value)
-		: CComponent(), m_value(t_value), m_output(new Wire(this))
+		: CComponent(), m_value(t_value)
 	{
 		m_type |= tConst;
 	}
+
+	std::ostringstream& to_str(std::ostringstream& ss) const;
+
+	ADD_OUTPUTS(CComponent *)
 };
 
 // control flow
 class Register: public CComponent {
 public:
-	Register() : CComponent(), m_output(new Wire(this))
+	Register() : CComponent()
 	{
 		m_type |= tRegister;
 	}
 
-	Register(std::initializer_list<Wire *> t_inputs) : CComponent()
-							   , m_output(new Wire(this))
+	Register(std::initializer_list<CComponent *> t_inputs) : CComponent()
 	{
 		m_type |= tRegister;
 
@@ -152,38 +146,36 @@ public:
 				t_inputs.begin(), t_inputs.end());
 	}
 
-	ADD_INPUTS(Wire *)
+	std::ostringstream& to_str(std::ostringstream& ss) const;
 
-	std::vector<Wire *>& get_inputs() { return m_inputs; }
-	Wire *get_output() { return m_output; }
+	ADD_INPUTS(CComponent *)
+	ADD_OUTPUTS(CComponent *)
 private:
-	std::vector<Wire *> m_inputs;
-	Wire *m_output;
+	std::vector<CComponent *> m_inputs;
+	std::vector<CComponent *> m_outputs;
 };
 
 class Mux: public CComponent {
 public:
-	Mux() : CComponent(), m_select(nullptr), m_output(new Wire(this))
+	Mux() : CComponent(), m_select(nullptr)
 	{
 		m_type |= tMux;
 	}
 
-	Mux(Wire *t_select)
-		: CComponent(), m_select(t_select), m_output(new Wire(this))
+	Mux(CComponent *t_select)
+		: CComponent(), m_select(t_select)
 	{
 		m_type |= tMux;
 	}
 
-	ADD_INPUTS(Wire *)
+	CComponent *get_select() const { return m_select; }
 
-	Wire *get_output() const { return m_output; }
-	Wire *get_select() const { return m_select; }
-	std::vector<Wire *>& get_inputs() { return m_inputs; }
-
+	ADD_INPUTS(CComponent *)
+	ADD_OUTPUTS(CComponent *)
 private:
-	Wire *m_select;
-	Wire *m_output;
-	std::vector<Wire *> m_inputs;
+	CComponent *m_select;
+	std::vector<CComponent *> m_outputs;
+	std::vector<CComponent *> m_inputs;
 };
 
 // helper to create new gates
@@ -194,7 +186,7 @@ private:
 		{								\
 			m_type |= TYPE;						\
 		}								\
-		NAME(std::initializer_list<Wire *> t_list) : CGate(t_list)	\
+		NAME(std::initializer_list<CComponent *> t_list) : CGate(t_list)\
 		{								\
 			m_type |= TYPE;						\
 		}								\
@@ -208,6 +200,5 @@ CREATE_GATE(XnorGate, tXnor)
 
 // actual function that parses the FSM into digital structs
 std::list<CComponent*> parse_digital(std::list<Parser *>& parsers);
-std::string print_type(int type);
 
 #endif /* _DIGITAL_H */

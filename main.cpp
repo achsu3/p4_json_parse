@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <iostream>
+#include <sstream>
 #include <fstream>
 
 #include "include/rapidjson/document.h" //DOM API
@@ -77,121 +78,15 @@ int main() {
 	}
 
 	// now translate to digital things
-	list<Circuit*> circuit_components = parse_digital(handler.get_parsers());
+	list<CComponent *> circuit_components; // = parse_digital(handler.get_parsers());
 
 	// test for the digital version by traversing the components pushed
-	list<Circuit*>::iterator components_it = circuit_components.begin();
+	list<CComponent *>::iterator components_it = circuit_components.begin();
 	while(components_it != circuit_components.end()){
 		// print all the things this is attached to and the wires
-		enum COMPONENT_TYPE type = (*components_it)->getType();
-		if(type == OOPS){
-			cout<< "something went wrong"<< endl;
-		}
-		else if(type == MUX){
-			cout<< "Mux:"<< endl;
-			Mux * mux = (Mux*) (*components_it);
-			cout<< "Input from:"<< endl;
-			for(int i = 0; i < mux->inputs.size(); i++){
-				cout << print_type(mux->inputs[i]->from->getType())<<endl;
-			}
-			cout<<"Select Input from: "<<endl;
-			cout << print_type(mux->select_input->from->getType())<<endl;
-
-			cout<<"Output to: "<<endl;
-			for(int j = 0; j<mux->output->to.size(); j++){
-				cout << print_type(mux->output->to[j]->getType())<<endl;
-			}
-
-		}
-		else if(type == AND){
-			cout<< "And:"<< endl;
-
-			And * _and = (And*) (*components_it);
-			cout<< "Input from:"<< endl;
-			if(_and->input1){
-				cout << print_type(_and->input1->from->getType())<<endl;
-			}
-			if(_and->input2){
-				cout << print_type(_and->input2->from->getType())<<endl;
-			}
-			cout<<"Output to: "<<endl;
-			for(int j = 0; j<_and->output->to.size(); j++){
-				cout << print_type(_and->output->to[j]->getType())<<endl;
-			}
-
-		}
-		else if(type == NOT){
-			cout<< "Not:"<< endl;
-
-			Not * _not = (Not*) (*components_it);
-			cout<< "Input from:"<< endl;
-			if(_not->input1)
-				cout << print_type(_not->input1->from->getType())<<endl;
-			if(_not->input2)
-				cout << print_type(_not->input2->from->getType())<<endl;
-
-			cout<<"Output to: "<<endl;
-			for(int j = 0; j<_not->output->to.size(); j++){
-				cout << print_type(_not->output->to[j]->getType())<<endl;
-			}
-
-		}
-		else if(type == NOR){
-			cout<< "Nor:"<< endl;
-
-			Nor * _nor = (Nor*) (*components_it);
-			cout<< "Input from:"<< endl;
-			cout << print_type(_nor->input1->from->getType())<<endl;
-			cout << print_type(_nor->input2->from->getType())<<endl;
-
-			cout<<"Output to: "<<endl;
-			for(int j = 0; j<_nor->output->to.size(); j++){
-				cout << print_type(_nor->output->to[j]->getType())<<endl;
-			}
-
-		}
-		else if(type == XOR){
-			cout<< "Xor:"<< endl;
-
-			Xor * _xor = (Xor*) (*components_it);
-			cout<< "Input from:"<< endl;
-			cout << print_type(_xor->input1->from->getType())<<endl;
-			cout << print_type(_xor->input2->from->getType())<<endl;
-
-			cout<<"Output to: "<<endl;
-			for(int j = 0; j<_xor->output->to.size(); j++){
-				cout << print_type(_xor->output->to[j]->getType())<<endl;
-			}
-
-		}
-		else if(type == XNOR){
-			cout<< "Xnor:"<< endl;
-
-			Xnor * _xnor = (Xnor*) (*components_it);
-			cout<< "Input from:"<< endl;
-			cout << print_type(_xnor->input1->from->getType())<<endl;
-			cout << print_type(_xnor->input2->from->getType())<<endl;
-
-			cout<<"Output to: "<<endl;
-			for(int j = 0; j<_xnor->output->to.size(); j++){
-				cout << print_type(_xnor->output->to[j]->getType())<<endl;
-			}
-		}
-		else if(type == CONSTANT_VALUE){
-			cout<< "Constant_value:"<< endl;
-
-			Constant_Value * constand_val = (Constant_Value*)(*components_it);
-			cout<< "Value: "<< (constand_val) ->value<<endl;
-
-			// show what this is connected to
-			for(int i = 0; i < constand_val->output->to.size(); i++){
-				cout<< "Output wire connected to: "<< print_type(constand_val->output->to[i]->getType())<<endl;
-			}
-		}
-		else if(type == CONTROL_FLOW){
-			cout<< "Control_flow:"<< endl;
-		}
-
+		ostringstream os;
+		(*components_it)->to_str(os);
+		std::cout << os.str();
 		components_it++;
 	}
 
