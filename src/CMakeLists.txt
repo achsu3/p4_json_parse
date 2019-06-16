@@ -36,3 +36,5 @@ target_include_directories(libp4aig
 
 target_compile_options(libp4aig PRIVATE -Wall -Werror)
 target_compile_features(libp4aig PRIVATE cxx_std_11)
+
+target_link_libraries(libp4aig PUBLIC libparser)
