@@ -59,10 +59,6 @@ std::list<P4Parser *>& P4AigParser::parse_p4_program()
 	}
 
 	// need to put the file into a rapidjson stringstream
-	// TODO: there must be a better way to handle this if the file
-	// is too big
-	// sstream << in_file.rdbuf();
-	//std::cout << sstream.str().c_str() << endl;
 	num_chars = get_number_characters(in_file);
 	json_chars = new char[num_chars + 1];
 	json_chars[num_chars] = '\0';
@@ -85,11 +81,13 @@ std::list<P4Parser *>& P4AigParser::parse_p4_program()
 		std::cerr << "[FATAL] RapidJson Parsing Error:"
 			<< rapidjson::GetParseError_En(ok.Code())
 			<< " at " << ok.Offset() << std::endl;
+		free(json_chars);
 		exit(0);
 	}
 	std::cout << "[P4AIG] RapidJson parsed successfully..." << std::endl;
 
 	// save the parsers by copying them and return a reference
 	p4parsers = handler.copy_parsers();
+	free(json_chars);
 	return p4parsers;
 }
