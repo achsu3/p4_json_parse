@@ -7,8 +7,6 @@
 #include <list>
 #include <vector>
 
-#include "parser/parser.h"
-
 // types of gates
 enum ComponentType {
 	tUndefined = 0,
@@ -199,6 +197,6 @@ CREATE_GATE(XorGate, tXor)
 CREATE_GATE(XnorGate, tXnor)
 
 // actual function that parses the FSM into digital structs
-std::list<CComponent*> parse_digital(std::list<Parser *>& parsers);
+/* std::list<CComponent*> parse_digital(std::list<Parser *>& parsers); */
 
 #endif /* CIRCUIT_COMPONENTS */

@@ -3,9 +3,6 @@
 #include <sstream>
 #include <fstream>
 
-#include "rapidjson/document.h" //DOM API
-#include "rapidjson/prettywriter.h" //stringify JSON
-#include "rapidjson/filereadstream.h"
 #include "parser/parser.h"
 #include "circuits/circuit_components.h"
 
