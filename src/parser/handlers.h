@@ -22,9 +22,9 @@ using namespace std;
 class MyHandler : public BaseReaderHandler<UTF8<>, MyHandler> {
 private:
 	// list of the parsers
-	list<Parser *> parsers;
+	list<P4Parser *> parsers;
 	// the parser that will be pushed to the list for each iteration
-	Parser *  curr_parser;
+	P4Parser *  curr_parser;
 	// the state that will be pushed for this iteration
 	State * curr_state;
 	// the transition that will be pushed to the list for this iteration
@@ -88,7 +88,7 @@ public:
 	bool Double(double d) { return true; }
 
 	/** setters and getters */
-	list<Parser *>& get_parsers() { return parsers; }
+	list<P4Parser *>& get_parsers() { return parsers; }
 };
 
 #endif /* handlers.h */

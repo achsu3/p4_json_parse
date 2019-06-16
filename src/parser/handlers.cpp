@@ -21,7 +21,7 @@ void
 MyHandler::second_pass()
 {
 
-	list<Parser*>::iterator parsers_it = parsers.begin();
+	list<P4Parser*>::iterator parsers_it = parsers.begin();
 	while(parsers_it!=parsers.end()){
 
 		list<State*>::iterator states_it =
@@ -58,7 +58,7 @@ MyHandler::String(const char* str, SizeType length, bool copy)
 	   parse_states_flag == 0 && state_flag == 0 &&
 	   transition_key_flag == 0 && value_flag == 0 &&
 	   next_state_flag== 0) {
-		curr_parser = new Parser(str);
+		curr_parser = new P4Parser(str);
 		parsers.push_back(curr_parser);
 		name_flag = 0;
 	} // condition for grabbing the state name_flag

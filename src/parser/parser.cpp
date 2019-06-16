@@ -23,7 +23,7 @@ State::add_transition(Transition *t)
 
 /* Add a state to the parser */
 void
-Parser::add_state(State *s)
+P4Parser::add_state(State *s)
 {
 	states.push_back(s);
 	// map it
@@ -32,7 +32,7 @@ Parser::add_state(State *s)
 
 /* lookup a state by name */
 State *
-Parser::lookup_state(string name)
+P4Parser::lookup_state(string name)
 {
 	map<string, State*>::iterator it = state_map.find(name);
 

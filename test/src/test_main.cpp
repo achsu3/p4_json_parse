@@ -34,8 +34,8 @@ int main() {
 	// putting logic for testing here because i couldn't get
 	// anything to compile :-/
 	// but basically this just prints everything that was parsed into the structs
-	list<Parser *>& parsers = handler.get_parsers();
-	list<Parser*>::iterator parsers_it = parsers.begin();
+	list<P4Parser *>& parsers = handler.get_parsers();
+	list<P4Parser*>::iterator parsers_it = parsers.begin();
 	while(parsers_it!=parsers.end()) {
 		cout<< "Parser name:" << (*parsers_it)->get_name() << endl;
 

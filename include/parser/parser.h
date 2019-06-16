@@ -58,7 +58,7 @@ public:
 	std::list<Transition *>& get_transitions() { return transitions; }
 };
 
-class Parser {
+class P4Parser {
 private:
 	//first "name" after finding "parsers"
 	std::string name;
@@ -73,7 +73,7 @@ public:
 	 * @s: the name of the parser
 	 *
 	 */
-	Parser(std::string s) { name = s; }
+	P4Parser(std::string s) { name = s; }
 
 	/** add_state - add a state to the parser
 	 *
