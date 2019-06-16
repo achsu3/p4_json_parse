@@ -6,39 +6,15 @@
 #include "p4aig/p4aig.h"
 
 using namespace p4aig;
+using namespace std;
 
 int main() {
 	P4AigParser *parser = new P4AigParser("basic.json");
-	parser->parse_p4_program();
-	std::cout << "Made it" << std::endl;
-#if 0
-	ifstream inFile ("basic.json");
-	if(!inFile){
-		printf("/n couldn't open file /n");
-		return -1;
-	}
+	list<P4Parser *>& p4parsers = parser->parse_p4_program();
 
-	MyHandler handler;
-	Reader reader;
-
-	//parse file normally and put into an array, test handler on it
-	char _json[8000];
-	int i=0;
-	while(!inFile.eof()&&i<8000){
-		_json[i] = inFile.get();
-		//std::cout<<_json[i]<<std::endl;
-		i++;
-	}
-
-	StringStream s2(_json);
-	reader.Parse(s2, handler);
-
-	// putting logic for testing here because i couldn't get
-	// anything to compile :-/
-	// but basically this just prints everything that was parsed into the structs
-	list<P4Parser *>& parsers = handler.get_parsers();
-	list<P4Parser*>::iterator parsers_it = parsers.begin();
-	while(parsers_it!=parsers.end()) {
+	list<P4Parser*>::iterator parsers_it = p4parsers.begin();
+	cout << "Parsed " << p4parsers.size() << " P4 parsers." << endl;
+	while(parsers_it!=p4parsers.end()) {
 		cout<< "Parser name:" << (*parsers_it)->get_name() << endl;
 
 		list<State*>::iterator states_it = (*parsers_it)->get_states().begin();
@@ -75,6 +51,32 @@ int main() {
 
 		parsers_it++;
 	}
+#if 0
+	ifstream inFile ("basic.json");
+	if(!inFile){
+		printf("/n couldn't open file /n");
+		return -1;
+	}
+
+	MyHandler handler;
+	Reader reader;
+
+	//parse file normally and put into an array, test handler on it
+	char _json[8000];
+	int i=0;
+	while(!inFile.eof()&&i<8000){
+		_json[i] = inFile.get();
+		//std::cout<<_json[i]<<std::endl;
+		i++;
+	}
+
+	StringStream s2(_json);
+	reader.Parse(s2, handler);
+
+	// putting logic for testing here because i couldn't get
+	// anything to compile :-/
+	// but basically this just prints everything that was parsed into the structs
+	list<P4Parser *>& parsers = handler.get_parsers();
 
 	// now translate to digital things
 	list<CComponent *> circuit_components; // = parse_digital(handler.get_parsers());

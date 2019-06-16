@@ -123,6 +123,7 @@ P4Handler::String(const char* str, SizeType length, bool copy)
 		next_state_flag = 0;
 	}
 
+
 	return true;
 }
 
