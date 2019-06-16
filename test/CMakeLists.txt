@@ -7,4 +7,4 @@ target_include_directories(test
 target_compile_options(test PRIVATE -Wall -Werror)
 target_compile_features(test PRIVATE cxx_std_11)
 
-target_link_libraries(test PUBLIC libcircuits libparser)
+target_link_libraries(test PUBLIC libp4aig libparser libcircuits)

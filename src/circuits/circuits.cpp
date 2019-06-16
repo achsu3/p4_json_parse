@@ -1,5 +1,7 @@
 #include "circuits/circuit_components.h"
 
+using namespace p4aig;
+
 static std::string print_type(const CComponent *c)
 {
 	if (IS_MUX(c))

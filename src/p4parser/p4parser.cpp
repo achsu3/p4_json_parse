@@ -1,6 +1,7 @@
 #include "p4parser/p4parser.h"
 
 using namespace std;
+using namespace p4aig;
 
 void
 Transition::add_value_type(string v)

@@ -1,7 +1,9 @@
 #include "p4parser/handlers.h"
 
+using namespace p4aig;
+
 bool
-MyHandler::Null()
+P4Handler::Null()
 {
 	//cout << "Null()" << endl;
 	if (in_parser_flag == 1 && name_flag == 0 &&
@@ -18,7 +20,7 @@ MyHandler::Null()
 }
 
 void
-MyHandler::second_pass()
+P4Handler::second_pass()
 {
 
 	list<P4Parser*>::iterator parsers_it = parsers.begin();
@@ -51,7 +53,7 @@ MyHandler::second_pass()
 }
 
 bool
-MyHandler::String(const char* str, SizeType length, bool copy)
+P4Handler::String(const char* str, SizeType length, bool copy)
 {
 	// condition for if a new parser is beginning
 	if(in_parser_flag == 1 && name_flag == 1 &&
@@ -125,7 +127,7 @@ MyHandler::String(const char* str, SizeType length, bool copy)
 }
 
 bool
-MyHandler::Key(const char* str, SizeType length, bool copy)
+P4Handler::Key(const char* str, SizeType length, bool copy)
 {
 	//cout << "Key(" << str << ", " << length << ", " << boolalpha << copy << ")" << endl;
 	//if the key is "parsers" -> set a flag and start parsing into digital logic classes
@@ -173,7 +175,7 @@ MyHandler::Key(const char* str, SizeType length, bool copy)
 }
 
 bool
-MyHandler::StartArray()
+P4Handler::StartArray()
 {
 	//cout << "StartArray()" << endl;
 	if(in_parser_flag == 1){
@@ -187,7 +189,7 @@ MyHandler::StartArray()
 }
 
 bool
-MyHandler::EndArray(SizeType elementCount)
+P4Handler::EndArray(SizeType elementCount)
 {
 	//cout << "EndArray(" << elementCount << ")" << endl;
 	if(in_parser_flag == 1){

@@ -3,13 +3,15 @@
 #include <sstream>
 #include <fstream>
 
-#include "p4parser/p4parser.h"
-#include "circuits/circuit_components.h"
+#include "p4aig/p4aig.h"
 
-using namespace std;
-using namespace rapidjson;
+using namespace p4aig;
 
 int main() {
+	P4AigParser *parser = new P4AigParser("basic.json");
+	parser->parse_p4_program();
+	std::cout << "Made it" << std::endl;
+#if 0
 	ifstream inFile ("basic.json");
 	if(!inFile){
 		printf("/n couldn't open file /n");
@@ -88,4 +90,5 @@ int main() {
 	}
 
 	return 0;
+#endif 
 }
