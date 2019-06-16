@@ -10,7 +10,7 @@
 #include "rapidjson/prettywriter.h" //stringify JSON
 #include "rapidjson/filereadstream.h"
 
-#include "parser/parser.h"
+#include "p4parser/p4parser.h"
 
 using namespace rapidjson;
 using namespace std;

@@ -3,7 +3,7 @@
 #include <sstream>
 #include <fstream>
 
-#include "parser/parser.h"
+#include "p4parser/p4parser.h"
 #include "circuits/circuit_components.h"
 
 using namespace std;

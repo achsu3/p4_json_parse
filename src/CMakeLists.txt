@@ -2,8 +2,8 @@
 
 # create the parser library
 add_library(libparser
-    parser/parser.cpp
-    parser/handlers.cpp)
+        p4parser/p4parser.cpp
+        p4parser/handlers.cpp)
 
 target_include_directories(libparser
     PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
