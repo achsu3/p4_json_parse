@@ -6,11 +6,11 @@
 #include <list>
 #include <string>
 
-#include "include/rapidjson/document.h" //DOM API
-#include "include/rapidjson/prettywriter.h" //stringify JSON
-#include "include/rapidjson/filereadstream.h"
+#include "rapidjson/document.h" //DOM API
+#include "rapidjson/prettywriter.h" //stringify JSON
+#include "rapidjson/filereadstream.h"
 
-#include "parser.h"
+#include "parser/parser.h"
 
 using namespace rapidjson;
 using namespace std;

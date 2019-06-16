@@ -1,5 +1,5 @@
-#ifndef _DIGITAL_H
-#define _DIGITAL_H
+#ifndef _CIRCUIT_COMPONENTS_H
+#define _CIRCUIT_COMPONENTS_H
 
 #include <string>
 #include <sstream>
@@ -7,7 +7,7 @@
 #include <list>
 #include <vector>
 
-#include "parser.h"
+#include "parser/parser.h"
 
 // types of gates
 enum ComponentType {
@@ -201,4 +201,4 @@ CREATE_GATE(XnorGate, tXnor)
 // actual function that parses the FSM into digital structs
 std::list<CComponent*> parse_digital(std::list<Parser *>& parsers);
 
-#endif /* _DIGITAL_H */
+#endif /* CIRCUIT_COMPONENTS */

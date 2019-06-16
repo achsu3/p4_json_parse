@@ -3,11 +3,11 @@
 #include <sstream>
 #include <fstream>
 
-#include "include/rapidjson/document.h" //DOM API
-#include "include/rapidjson/prettywriter.h" //stringify JSON
-#include "include/rapidjson/filereadstream.h"
-#include "handlers.h"
-#include "digital.h"
+#include "rapidjson/document.h" //DOM API
+#include "rapidjson/prettywriter.h" //stringify JSON
+#include "rapidjson/filereadstream.h"
+#include "parser/parser.h"
+#include "circuits/circuit_components.h"
 
 using namespace std;
 using namespace rapidjson;

@@ -7,9 +7,9 @@
 #include <map>
 #include <list>
 
-#include "include/rapidjson/document.h" //DOM API
-#include "include/rapidjson/prettywriter.h" //stringify JSON
-#include "include/rapidjson/filereadstream.h"
+#include "rapidjson/document.h" //DOM API
+#include "rapidjson/prettywriter.h" //stringify JSON
+#include "rapidjson/filereadstream.h"
 
 // defined so transition and state can use each other as members
 class State;

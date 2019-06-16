@@ -1,4 +1,4 @@
-#include "digital.h"
+#include "circuits/circuit_components.h"
 
 static std::string print_type(const CComponent *c)
 {
@@ -28,7 +28,7 @@ std::ostringstream&
 CGate::to_str(std::ostringstream& ss) const
 {
 	ss << "[[ " << print_type(this) << " ]]: << ";
-	for (int i = 0; i < m_inputs.size(); ++i) {
+	for (unsigned int i = 0; i < m_inputs.size(); ++i) {
 		CComponent *in = m_inputs[i];
 		in->to_str(ss);
 
@@ -51,7 +51,7 @@ std::ostringstream&
 Register::to_str(std::ostringstream& ss) const
 {
 	ss << "[[ " << print_type(this) << " ]]: << ";
-	for (int i = 0; i < m_inputs.size(); ++i) {
+	for (unsigned int i = 0; i < m_inputs.size(); ++i) {
 		CComponent *in = m_inputs[i];
 		in->to_str(ss);
 
