@@ -108,7 +108,7 @@ namespace p4aig
 		std::ostringstream& to_str(std::ostringstream& ss) const;
 
 		ADD_INPUTS(CComponent *)
-			ADD_OUTPUTS(CComponent *)
+		ADD_OUTPUTS(CComponent *)
 	};
 
 	class Constant : public CComponent {
@@ -150,10 +150,10 @@ namespace p4aig
 		std::ostringstream& to_str(std::ostringstream& ss) const;
 
 		ADD_INPUTS(CComponent *)
-			ADD_OUTPUTS(CComponent *)
+		ADD_OUTPUTS(CComponent *)
 	private:
-			std::vector<CComponent *> m_inputs;
-			std::vector<CComponent *> m_outputs;
+		std::vector<CComponent *> m_inputs;
+		std::vector<CComponent *> m_outputs;
 	};
 
 	class Mux: public CComponent {
@@ -172,11 +172,11 @@ namespace p4aig
 		CComponent *get_select() const { return m_select; }
 
 		ADD_INPUTS(CComponent *)
-			ADD_OUTPUTS(CComponent *)
+		ADD_OUTPUTS(CComponent *)
 	private:
-			CComponent *m_select;
-			std::vector<CComponent *> m_outputs;
-			std::vector<CComponent *> m_inputs;
+		CComponent *m_select;
+		std::vector<CComponent *> m_outputs;
+		std::vector<CComponent *> m_inputs;
 	};
 
 	// helper to create new gates
@@ -194,10 +194,10 @@ namespace p4aig
 	};
 
 	CREATE_GATE(AndGate, tAnd)
-		CREATE_GATE(Inverter, tNot)
-		CREATE_GATE(NorGate, tNor)
-		CREATE_GATE(XorGate, tXor)
-		CREATE_GATE(XnorGate, tXnor)
+	CREATE_GATE(Inverter, tNot)
+	CREATE_GATE(NorGate, tNor)
+	CREATE_GATE(XorGate, tXor)
+	CREATE_GATE(XnorGate, tXnor)
 
 }
 
